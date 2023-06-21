@@ -5,7 +5,7 @@ A fun little interactive Turing machine (with finite tape).
 
 ## Requirements
 
-<TODO: list cargo requirements here>
+Rust, may be installed using [rustup](https://www.rust-lang.org/tools/install).
 
 ## Example Program
 
