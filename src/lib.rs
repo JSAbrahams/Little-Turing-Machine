@@ -7,6 +7,44 @@ pub mod presets;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct State(Option<usize>);
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Symbol(Option<usize>);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Action {
+    L,
+    R,
+    N,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Write {
+    Print(Symbol),
+    Erase,
+    None,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Input(State, Symbol);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Output(Write, Action, State);
+
+pub struct TransitionFunction(HashMap<Input, Output>);
+
+pub struct Machine {
+    pub state: State,
+    transition_function: TransitionFunction,
+}
+
+pub struct Tape(Vec<Symbol>);
+
+pub struct Universe {
+    pub tape: Tape,
+    pub head: usize,
+    pub machine: Machine,
+}
+
 impl Display for State {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.0 {
@@ -32,9 +70,6 @@ impl State {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Symbol(Option<usize>);
-
 impl From<usize> for Symbol {
     fn from(value: usize) -> Self {
         Symbol(Some(value))
@@ -56,13 +91,6 @@ impl Display for Symbol {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Action {
-    L,
-    R,
-    N,
-}
-
 impl Display for Action {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
@@ -71,13 +99,6 @@ impl Display for Action {
             Action::N => write!(f, "N"),
         }
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Write {
-    Print(Symbol),
-    Erase,
-    None,
 }
 
 impl Display for Write {
@@ -95,8 +116,6 @@ impl From<Symbol> for Write {
         Write::Print(symbol)
     }
 }
-
-pub struct TransitionFunction(HashMap<Input, Output>);
 
 impl TransitionFunction {
     pub fn act(&self, current_state: State, scanned_symbol: Symbol) -> Result<Output, String> {
@@ -134,9 +153,6 @@ impl TransitionFunctionBuilder {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Input(State, Symbol);
-
 impl Input {
     pub fn current_state(&self) -> State {
         self.0
@@ -146,9 +162,6 @@ impl Input {
         self.1
     }
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Output(Write, Action, State);
 
 impl Output {
     pub fn print_symbol(&self) -> Write {
@@ -163,8 +176,6 @@ impl Output {
         self.2
     }
 }
-
-pub struct Tape(Vec<Symbol>);
 
 impl Display for Tape {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -223,11 +234,6 @@ impl Tape {
     }
 }
 
-pub struct Machine {
-    pub state: State,
-    transition_function: TransitionFunction,
-}
-
 impl Machine {
     pub fn tick(&mut self, scanned_symbol: Symbol) -> Result<(Write, Action), String> {
         if self.state.is_halted() {
@@ -249,12 +255,6 @@ impl Machine {
             transition_function,
         }
     }
-}
-
-pub struct Universe {
-    pub tape: Tape,
-    pub head: usize,
-    pub machine: Machine,
 }
 
 impl Universe {
