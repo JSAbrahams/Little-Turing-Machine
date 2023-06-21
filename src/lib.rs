@@ -168,7 +168,11 @@ pub struct Tape(Vec<Symbol>);
 
 impl Display for Tape {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0.iter().map(|i| format!("{i}")).collect::<String>())
+        write!(
+            f,
+            "{}",
+            self.0.iter().map(|i| format!("{i}")).collect::<String>()
+        )
     }
 }
 
