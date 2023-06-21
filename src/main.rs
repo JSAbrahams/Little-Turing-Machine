@@ -1,6 +1,6 @@
 use std::{collections::HashMap, iter::FromIterator};
 
-use turing_machine::Action::*;
+use turing_machine::{Action::*, Tape};
 use turing_machine::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
 
 pub fn main() {
@@ -13,6 +13,8 @@ pub fn main() {
     let s_a = State::from(0);
     let s_b = State::from(1);
     let s_c = State::from(2);
+
+    let initial_tape = vec![s0; tape_len];
 
     let display_state_as: HashMap<State, String> = HashMap::from_iter([
         (s_a, "A".to_owned()),
@@ -29,13 +31,18 @@ pub fn main() {
     builder.add(s_c, s1, Write::from(s1), N, State::halt());
 
     let transition_function = builder.build();
-    let mut universe = Universe::new(vec![s0; tape_len], initial_head, s_a, transition_function);
+    let mut universe = Universe::new(initial_tape.clone(), initial_head, s_a, transition_function);
 
     println!("machine");
     println!("symbols: {s0}, {s1}");
     println!(
         "states: {}, {}, {}",
         display_state_as[&s_a], display_state_as[&s_b], display_state_as[&s_c]
+    );
+    println!("initial tape: {}", Tape::from_iter(initial_tape).print_to(tape_len));
+    println!(
+        "initial state: {}",
+        display_state_as[&universe.machine.state]
     );
     println!("transition function:");
     println!("  (current state, scanned symbol) -> (print symbol, move tape, next state)");
@@ -61,12 +68,7 @@ pub fn main() {
     let mut sequence = 0;
     while !universe.machine.state.is_halted() {
         let state = display_state_as[&universe.machine.state].to_string();
-        let tape = universe
-            .tape
-            .read_to(tape_len)
-            .iter()
-            .map(|i| format!("{i}"))
-            .collect::<String>();
+        let tape = universe.tape.print_to(tape_len);
         println!("{sequence:8} :: {state:^11} :: {tape}");
 
         universe.tick().unwrap();

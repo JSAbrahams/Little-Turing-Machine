@@ -197,6 +197,11 @@ impl Tape {
         values.append(&mut vec![Symbol::empty(); pad_length]);
         values
     }
+
+    pub fn print_to(&self, len: usize) -> String {
+        let symbols = self.read_to(len);
+        symbols.iter().map(|i| format!("{i}")).collect::<String>()
+    }
 }
 
 pub struct Machine {
