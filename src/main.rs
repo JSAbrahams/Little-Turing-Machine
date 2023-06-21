@@ -4,17 +4,16 @@ use turing_machine::{Action::*, Tape};
 use turing_machine::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
 
 pub fn main() {
-    let tape_len = 10_usize;
     let initial_head = 4_usize;
 
-    let s0 = Symbol::from(0);
+    let s0 = Symbol::empty();
     let s1 = Symbol::from(1);
 
     let s_a = State::from(0);
     let s_b = State::from(1);
     let s_c = State::from(2);
 
-    let initial_tape = vec![s0; tape_len];
+    let initial_tape = vec![];
 
     let display_state_as: HashMap<State, String> = HashMap::from_iter([
         (s_a, "A".to_owned()),
@@ -39,7 +38,7 @@ pub fn main() {
         "states: {}, {}, {}",
         display_state_as[&s_a], display_state_as[&s_b], display_state_as[&s_c]
     );
-    println!("initial tape: {}", Tape::from_iter(initial_tape).print_to(tape_len));
+    println!("initial tape: {}", Tape::from_iter(initial_tape));
     println!(
         "initial state: {}",
         display_state_as[&universe.machine.state]
@@ -68,8 +67,7 @@ pub fn main() {
     let mut sequence = 0;
     while !universe.machine.state.is_halted() {
         let state = display_state_as[&universe.machine.state].to_string();
-        let tape = universe.tape.print_to(tape_len);
-        println!("{sequence:8} :: {state:^11} :: {tape}");
+        println!("{sequence:8} :: {state:^11} :: {}", universe.tape);
 
         universe.tick().unwrap();
         sequence += 1;

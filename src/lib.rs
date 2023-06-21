@@ -10,7 +10,7 @@ pub struct State(Option<usize>);
 impl Display for State {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.0 {
-            None => write!(f, "H"),
+            None => write!(f, "!"),
             Some(symbol) => write!(f, "{}", symbol),
         }
     }
@@ -50,7 +50,7 @@ impl Symbol {
 impl Display for Symbol {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.0 {
-            None => write!(f, "b"),
+            None => write!(f, "_"),
             Some(symbol) => write!(f, "{}", symbol),
         }
     }
@@ -166,6 +166,12 @@ impl Output {
 
 pub struct Tape(Vec<Symbol>);
 
+impl Display for Tape {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.iter().map(|i| format!("{i}")).collect::<String>())
+    }
+}
+
 impl FromIterator<Symbol> for Tape {
     fn from_iter<T: IntoIterator<Item = Symbol>>(symbols: T) -> Self {
         Tape(Vec::from_iter(symbols))
@@ -188,6 +194,15 @@ impl Tape {
             Write::Erase if position < self.0.len() => self.0[position] = Symbol::empty(),
             _ => {}
         }
+    }
+
+    // Shift everything to the right by one and prepend with empty symbol.
+    pub fn shift(&mut self) {
+        self.0.push(Symbol::empty());
+        for i in (1..self.0.len()).rev() {
+            self.0[i] = self.0[i - 1];
+        }
+        self.0[0] = Symbol::empty();
     }
 
     pub fn read_to(&self, len: usize) -> Vec<Symbol> {
@@ -266,7 +281,12 @@ impl Universe {
         let (print, action) = self.machine.tick(scanned_symbol)?;
 
         self.tape.write(print, self.head);
-        self.shift(action);
+
+        if self.head == 0 && action == Action::L {
+            self.tape.shift();
+        } else {
+            self.shift(action);
+        }
 
         Ok(())
     }
