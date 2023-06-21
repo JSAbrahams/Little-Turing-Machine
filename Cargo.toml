@@ -1,0 +1,5 @@
+[package]
+name = "turing_machine"
+version = "0.0.1"
+authors = ["Joël"]
+edition = "2018"
