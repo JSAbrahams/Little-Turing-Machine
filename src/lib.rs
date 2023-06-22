@@ -30,6 +30,7 @@ pub struct Input(State, Symbol);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Output(Write, Action, State);
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TransitionFunction(HashMap<Input, Output>);
 
 pub struct Machine {
@@ -135,12 +136,12 @@ impl TransitionFunctionBuilder {
         current_state: State,
         input_symbol: Symbol,
         write_action: Write,
-        move_tape: Action,
+        move_head: Action,
         next_state: State,
     ) {
         self.0.push((
             Input(current_state, input_symbol),
-            Output(write_action, move_tape, next_state),
+            Output(write_action, move_head, next_state),
         ));
     }
 
@@ -168,7 +169,7 @@ impl Output {
         self.0
     }
 
-    pub fn move_tape(&self) -> Action {
+    pub fn move_head(&self) -> Action {
         self.1
     }
 

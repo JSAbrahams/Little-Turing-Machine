@@ -1,67 +1,108 @@
-#[cfg(test)]
-mod tests {
-    use crate::Action::*;
-    use crate::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
+use std::{collections::HashMap, iter::FromIterator};
 
-    #[test]
-    #[ignore = "beaver does not behave"]
-    pub fn verify_state_busy_beaver() {
-        let tape_len = 10_usize;
-        let initial_head = 4_usize;
+use crate::Action::*;
+use crate::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
 
-        let s0 = Symbol::from(0);
-        let s1 = Symbol::from(1);
+type BusyBeaverTuple = (
+    String,
+    usize,
+    Vec<Symbol>,
+    Vec<State>,
+    HashMap<State, String>,
+    Vec<Symbol>,
+    TransitionFunctionBuilder,
+    Universe,
+);
 
-        let sA = State::from(0);
-        let sB = State::from(1);
-        let sC = State::from(2);
-        let sH = State::halt();
+pub fn three_state_busy_beaver() -> BusyBeaverTuple {
+    let name = String::from("3-state, 2-symbol busy beaver");
+    let initial_head = 1_usize;
 
-        let mut builder = TransitionFunctionBuilder::default();
-        builder.add(sA, s0, Write::from(s1), R, sB);
-        builder.add(sA, s1, Write::from(s1), L, sC);
-        builder.add(sB, s0, Write::from(s1), L, sA);
-        builder.add(sB, s1, Write::from(s1), R, sB);
-        builder.add(sC, s0, Write::from(s1), L, sB);
-        builder.add(sC, s1, Write::from(s1), N, sH);
+    let s0 = Symbol::empty();
+    let s1 = Symbol::from(1);
 
-        let transition_function = builder.build();
-        let mut u = Universe::new(vec![s0; tape_len], initial_head, sA, transition_function);
+    let s_a = State::from(0);
+    let s_b = State::from(1);
+    let s_c = State::from(2);
 
-        let mut sequence = 1;
-        macro_rules! step_verify {
-            ($state:expr, $($symbols:tt),*) => {
-                let a = u.machine.state == $state;
+    let initial_tape = vec![];
 
-                let u_tape = u.tape.read_to(tape_len);
-                let exp_tape = vec![$($symbols),*];
-                let b = u_tape == exp_tape;
+    let display_state_as: HashMap<State, String> = HashMap::from_iter([
+        (s_a, "A".to_owned()),
+        (s_b, "B".to_owned()),
+        (s_c, "C".to_owned()),
+    ]);
 
-                if !a || !b {
-                    let left = format!("{sequence} : {} : {}", u.machine.state, u_tape.iter().map(|i| format!("{i}")).collect::<String>());
-                    let right = format!("{sequence} : {} : {}", $state, exp_tape.iter().map(|i| format!("{i}")).collect::<String>());
-                    assert_eq!(left, right);
-                }
+    let mut builder = TransitionFunctionBuilder::default();
+    builder.add(s_a, s0, Write::from(s1), R, s_b);
+    builder.add(s_a, s1, Write::from(s1), R, State::halt());
 
-                u.tick().unwrap();
-                sequence += 1;
-            };
-        }
+    builder.add(s_b, s0, Write::from(s0), R, s_c);
+    builder.add(s_b, s1, Write::from(s1), R, s_b);
 
-        //////////////////////////////// HEAD
-        step_verify!(sA, s0, s0, s0, s0, s0, s0, s0, s0, s0, s0);
-        step_verify!(sB, s0, s0, s0, s0, s0, s1, s0, s0, s0, s0);
-        step_verify!(sA, s0, s0, s0, s1, s1, s0, s0, s0, s0, s0);
-        step_verify!(sC, s0, s0, s1, s1, s0, s0, s0, s0, s0, s0);
-        step_verify!(sB, s0, s1, s1, s1, s0, s0, s0, s0, s0, s0);
-        step_verify!(sA, s1, s1, s1, s1, s0, s0, s0, s0, s0, s0);
-        step_verify!(sB, s0, s1, s1, s1, s1, s1, s0, s0, s0, s0);
-        step_verify!(sB, s0, s0, s1, s1, s1, s1, s1, s0, s0, s0);
-        step_verify!(sB, s0, s0, s0, s1, s1, s1, s1, s1, s0, s0);
-        step_verify!(sB, s0, s0, s0, s0, s1, s1, s1, s1, s1, s0);
-        step_verify!(sB, s0, s0, s0, s0, s0, s1, s1, s1, s1, s1);
-        step_verify!(sA, s0, s0, s0, s1, s1, s1, s1, s1, s1, s0);
-        step_verify!(sC, s0, s0, s1, s1, s1, s1, s1, s1, s0, s0);
-        step_verify!(sH, s0, s0, s0, s1, s1, s1, s1, s1, s1, s0);
-    }
+    builder.add(s_c, s0, Write::from(s1), L, s_c);
+    builder.add(s_c, s1, Write::from(s1), L, s_a);
+
+    let transition_function = builder.build();
+    let universe = Universe::new(initial_tape.clone(), initial_head, s_a, transition_function);
+
+    (
+        name,
+        initial_head,
+        vec![s0, s1],
+        vec![s_a, s_b, s_c],
+        display_state_as,
+        initial_tape,
+        builder,
+        universe,
+    )
+}
+
+pub fn four_state_busy_beaver() -> BusyBeaverTuple {
+    let name = String::from("4-state, 2-symbol busy beaver");
+    let initial_head = 9_usize;
+
+    let s0 = Symbol::empty();
+    let s1 = Symbol::from(1);
+
+    let s_a = State::from(0);
+    let s_b = State::from(1);
+    let s_c = State::from(2);
+    let s_d = State::from(3);
+
+    let initial_tape = vec![];
+
+    let display_state_as: HashMap<State, String> = HashMap::from_iter([
+        (s_a, "A".to_owned()),
+        (s_b, "B".to_owned()),
+        (s_c, "C".to_owned()),
+        (s_d, "D".to_owned()),
+    ]);
+
+    let mut builder = TransitionFunctionBuilder::default();
+    builder.add(s_a, s0, Write::from(s1), R, s_b);
+    builder.add(s_a, s1, Write::from(s1), L, s_b);
+
+    builder.add(s_b, s0, Write::from(s1), L, s_a);
+    builder.add(s_b, s1, Write::from(s0), L, s_c);
+
+    builder.add(s_c, s0, Write::from(s1), R, State::halt());
+    builder.add(s_c, s1, Write::from(s1), L, s_d);
+
+    builder.add(s_d, s0, Write::from(s1), R, s_d);
+    builder.add(s_d, s1, Write::from(s0), R, s_a);
+
+    let transition_function = builder.build();
+    let universe = Universe::new(initial_tape.clone(), initial_head, s_a, transition_function);
+
+    (
+        name,
+        initial_head,
+        vec![s0, s1],
+        vec![s_a, s_b, s_c],
+        display_state_as,
+        initial_tape,
+        builder,
+        universe,
+    )
 }

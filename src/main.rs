@@ -1,75 +1,105 @@
 use std::{collections::HashMap, iter::FromIterator};
 
-use turing_machine::{Action::*, Tape};
-use turing_machine::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
+use turing_machine::{presets::*, State, Symbol, Tape, TransitionFunctionBuilder, Universe};
 
-pub fn main() {
-    let initial_head = 4_usize;
-
-    let s0 = Symbol::empty();
-    let s1 = Symbol::from(1);
-
-    let s_a = State::from(0);
-    let s_b = State::from(1);
-    let s_c = State::from(2);
-
-    let initial_tape = vec![];
-
-    let display_state_as: HashMap<State, String> = HashMap::from_iter([
-        (s_a, "A".to_owned()),
-        (s_b, "B".to_owned()),
-        (s_c, "C".to_owned()),
-    ]);
-
-    let mut builder = TransitionFunctionBuilder::default();
-    builder.add(s_a, s0, Write::from(s1), R, s_b);
-    builder.add(s_a, s1, Write::from(s1), L, s_c);
-    builder.add(s_b, s0, Write::from(s1), L, s_a);
-    builder.add(s_b, s1, Write::from(s1), R, s_b);
-    builder.add(s_c, s0, Write::from(s1), L, s_b);
-    builder.add(s_c, s1, Write::from(s1), N, State::halt());
-
-    let transition_function = builder.build();
-    let mut universe = Universe::new(initial_tape.clone(), initial_head, s_a, transition_function);
-
-    println!("machine");
-    println!("symbols: {s0}, {s1}");
+#[allow(clippy::too_many_arguments)] // for now
+fn print_machine(
+    name: &str,
+    initial_head: usize,
+    symbols: &[Symbol],
+    states: &[State],
+    display_state_as: HashMap<State, String>,
+    initial_tape: &[Symbol],
+    builder: TransitionFunctionBuilder,
+    mut universe: Universe,
+) {
+    println!("machine: {name}");
     println!(
-        "states: {}, {}, {}",
-        display_state_as[&s_a], display_state_as[&s_b], display_state_as[&s_c]
+        "symbols: {}",
+        symbols.iter().map(|s| format!("{s} ")).collect::<String>()
     );
-    println!("initial tape: {}", Tape::from_iter(initial_tape));
+    println!(
+        "states: {}",
+        states
+            .iter()
+            .map(|s| format!("{} ", display_state_as[s]))
+            .collect::<String>()
+    );
+
+    println!(
+        "initial tape: {}",
+        Tape::from_iter(initial_tape.iter().cloned())
+    );
     println!(
         "initial state: {}",
         display_state_as[&universe.machine.state]
     );
+
     println!("transition function:");
     println!("  (current state, scanned symbol) -> (print symbol, move tape, next state)");
+
+    macro_rules! print_state {
+        ($state:expr) => {
+            match $state {
+                x if x.is_halted() => x.to_string(),
+                _ => display_state_as[$state].to_owned(),
+            }
+        };
+    }
+
     for (input, output) in builder.added() {
         let (cur_s, scanned_s) = (
             display_state_as[&input.current_state()].to_owned(),
             input.scanned_symbol(),
         );
 
-        let next_s = match output.next_state() {
-            x if x.is_halted() => x.to_string(),
-            _ => display_state_as[&output.next_state()].to_owned(),
-        };
-        let (print_s, move_t) = (output.print_symbol(), output.move_tape());
-
-        println!("  ({cur_s}, {scanned_s}) -> ({print_s}, {move_t}, {next_s})");
+        let next_s = print_state!(&output.next_state());
+        let (print_s, move_h) = (output.print_symbol(), output.move_head());
+        println!("  ({cur_s}, {scanned_s}) -> ({print_s}, {move_h}, {next_s})");
     }
 
     println!("\ncomputation");
-    println!("sequence :: instruction :: tape");
-    println!("{:>width$} -> $", "HEAD", width = 27 - 4 + initial_head);
+    println!("sequence :: instr :: tape");
+    println!("{:>width$} -> $", "HEAD", width = 21 - 4 + initial_head);
 
     let mut sequence = 0;
     while !universe.machine.state.is_halted() {
-        let state = display_state_as[&universe.machine.state].to_string();
-        println!("{sequence:8} :: {state:^11} :: {}", universe.tape);
+        let state = print_state!(&universe.machine.state);
+        println!("{sequence:8} :: {state:^5} :: {}", universe.tape);
 
         universe.tick().unwrap();
         sequence += 1;
     }
+
+    let state = print_state!(&universe.machine.state);
+    println!("{sequence:8} :: {state:^5} :: {}", universe.tape);
+}
+
+pub fn main() {
+    let (name, initial_head, symbols, states, display_state_as, initial_tape, builder, universe) =
+        three_state_busy_beaver();
+    print_machine(
+        &name,
+        initial_head,
+        &symbols,
+        &states,
+        display_state_as,
+        &initial_tape,
+        builder,
+        universe,
+    );
+
+    println!("-----------------------------------------------------");
+    let (name, initial_head, symbols, states, display_state_as, initial_tape, builder, universe) =
+        four_state_busy_beaver();
+    print_machine(
+        &name,
+        initial_head,
+        &symbols,
+        &states,
+        display_state_as,
+        &initial_tape,
+        builder,
+        universe,
+    );
 }
