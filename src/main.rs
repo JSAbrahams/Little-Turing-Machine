@@ -1,18 +1,12 @@
-use std::{collections::HashMap, iter::FromIterator};
+use turing_machine::presets::*;
 
-use turing_machine::{presets::*, State, Symbol, Tape, TransitionFunctionBuilder, Universe};
+fn print_machine(busy_beaver_packed: BusyBeaverPacked) {
+    let (name, initial_head) = (busy_beaver_packed.name, busy_beaver_packed.initial_head);
+    let (symbols, states) = (busy_beaver_packed.symbols, busy_beaver_packed.states);
+    let display_state_as = busy_beaver_packed.display_state_as;
+    let mut universe = busy_beaver_packed.universe;
+    let builder = busy_beaver_packed.transition_function_buidler;
 
-#[allow(clippy::too_many_arguments)] // for now
-fn print_machine(
-    name: &str,
-    initial_head: usize,
-    symbols: &[Symbol],
-    states: &[State],
-    display_state_as: HashMap<State, String>,
-    initial_tape: &[Symbol],
-    builder: TransitionFunctionBuilder,
-    mut universe: Universe,
-) {
     println!("machine: {name}");
     println!(
         "symbols: {}",
@@ -26,10 +20,6 @@ fn print_machine(
             .collect::<String>()
     );
 
-    println!(
-        "initial tape: {}",
-        Tape::from_iter(initial_tape.iter().cloned())
-    );
     println!(
         "initial state: {}",
         display_state_as[&universe.machine.state]
@@ -76,30 +66,14 @@ fn print_machine(
 }
 
 pub fn main() {
-    let (name, initial_head, symbols, states, display_state_as, initial_tape, builder, universe) =
-        three_state_busy_beaver();
-    print_machine(
-        &name,
-        initial_head,
-        &symbols,
-        &states,
-        display_state_as,
-        &initial_tape,
-        builder,
-        universe,
-    );
+    let busy_beaver_packed = three_state_busy_beaver();
+    print_machine(busy_beaver_packed);
 
     println!("-----------------------------------------------------");
-    let (name, initial_head, symbols, states, display_state_as, initial_tape, builder, universe) =
-        four_state_busy_beaver();
-    print_machine(
-        &name,
-        initial_head,
-        &symbols,
-        &states,
-        display_state_as,
-        &initial_tape,
-        builder,
-        universe,
-    );
+    let busy_beaver_packed = four_state_busy_beaver();
+    print_machine(busy_beaver_packed);
+
+    println!("-----------------------------------------------------");
+    let busy_beaver_packed = five_state_busy_beaver();
+    print_machine(busy_beaver_packed);
 }
