@@ -11,6 +11,9 @@ Rust, may be installed using [rustup](https://www.rust-lang.org/tools/install).
 
 `cargo run`
 
+Must then type either 3, 4, or 5 to run either 3, 4, or 5-state 2-symbol busy beaver.
+Note that the 5-state busy beaver requires 47.176.870 steps to complete!
+
 ## Partial Output
 
 Example program of a 3-state, 2-symbol busy beaver.
@@ -50,5 +53,3 @@ sequence :: instr :: tape
       13 ::   A   :: 111111
       14 ::   !   :: 111111
 ```
-
-Output is then followed by the output of a 4-state, 2-symbol busy beaver!
