@@ -102,7 +102,7 @@ pub fn four_state_busy_beaver() -> BusyBeaverPacked {
 
 pub fn five_state_busy_beaver() -> BusyBeaverPacked {
     let name = String::from("5-state, 2-symbol busy beaver");
-    let initial_head = 200_usize;
+    let initial_head = 3000_usize; // eyeball figure
 
     let s0 = Symbol::empty();
     let s1 = Symbol::from(1);

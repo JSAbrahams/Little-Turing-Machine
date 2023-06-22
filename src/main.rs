@@ -1,3 +1,5 @@
+use std::io;
+
 use turing_machine::presets::*;
 
 fn print_machine(busy_beaver_packed: BusyBeaverPacked) {
@@ -66,14 +68,26 @@ fn print_machine(busy_beaver_packed: BusyBeaverPacked) {
 }
 
 pub fn main() {
-    let busy_beaver_packed = three_state_busy_beaver();
-    print_machine(busy_beaver_packed);
+    let mut user_input = String::new();
+    let stdin = io::stdin();
 
-    println!("-----------------------------------------------------");
-    let busy_beaver_packed = four_state_busy_beaver();
-    print_machine(busy_beaver_packed);
+    let mut busy_beaver_packed: Option<BusyBeaverPacked> = None;
+    while busy_beaver_packed.is_none() {
+        print!("Pick one of the following busy beavers (3, 4, 5): ");
+        stdin.read_line(&mut user_input).unwrap();
 
-    println!("-----------------------------------------------------");
-    let busy_beaver_packed = five_state_busy_beaver();
-    print_machine(busy_beaver_packed);
+        match user_input.as_str().trim() {
+            "3" => busy_beaver_packed = Some(three_state_busy_beaver()),
+            "4" => busy_beaver_packed = Some(four_state_busy_beaver()),
+            "5" => busy_beaver_packed = Some(five_state_busy_beaver()),
+            x => print!("{x} is not a valid choice"),
+        }
+
+        user_input.clear();
+        println!()
+    }
+
+    if let Some(busy_beaver_packed) = busy_beaver_packed {
+        print_machine(busy_beaver_packed);
+    }
 }
