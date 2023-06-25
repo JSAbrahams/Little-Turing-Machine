@@ -2,7 +2,7 @@ use std::sync::Mutex;
 use std::{collections::VecDeque, time::Duration};
 
 use crate::presets::UniverseMetadata;
-use crate::{Action, Tape, Universe};
+use crate::{Action, Machine, Symbol, Tape, Universe};
 
 use nannou::prelude::*;
 use once_cell::sync::OnceCell;
@@ -10,6 +10,21 @@ use once_cell::sync::OnceCell;
 use super::{display_state, DisplayStateAs};
 
 const DEFAULT_TICK_SPEED: Duration = Duration::from_secs(1);
+const DISPLAY_TAPE_HALF_WIDTH: usize = 25;
+
+const CELL_WIDTH: f32 = 20_f32;
+const CELL_HEIGHT: f32 = 20_f32;
+const CELL_X_OFFSET: f32 = 0_f32;
+const CELL_STROKE_WIDTH: f32 = 1_f32;
+
+const TURING_MACHINE_HEIGHT: f32 = 40_f32;
+const TURING_MACHINE_WIDTH: f32 = 40_f32;
+const TURING_MACHINE_X_OFFSET: f32 = CELL_WIDTH * DISPLAY_TAPE_HALF_WIDTH as f32 + CELL_X_OFFSET;
+const TURING_MACHINE_Y_OFFSET: f32 = 0_f32;
+
+const CELL_Y_OFFSET: f32 = TURING_MACHINE_Y_OFFSET + TURING_MACHINE_HEIGHT + 10_f32;
+
+const CELL_OUTLINE_COLOR: nannou::prelude::rgb::Srgb<u8> = STEELBLUE;
 
 // workaround for nannou API so we can pass model
 static MODEL: OnceCell<Mutex<Model>> = OnceCell::new();
@@ -105,6 +120,19 @@ fn view(app: &App, model: &Model, frame: Frame) {
     // reset background
     draw.background().color(BLACK);
 
+    draw_tape(&model.universe.tape, model.universe.head, &draw);
+    draw_machine(
+        &model.universe.machine,
+        model.universe.head,
+        &model.state_as,
+        &draw,
+    );
+
+    draw.to_frame(app, &frame).unwrap();
+}
+
+#[allow(dead_code)]
+fn draw_debug_info(draw: &Draw, model: &Model) {
     // print debug info
     let head_symbol = format!(
         "{}{} [{}]",
@@ -124,21 +152,68 @@ fn view(app: &App, model: &Model, frame: Frame) {
         .as_str(),
     )
     .left_justify();
+}
 
-    draw.to_frame(app, &frame).unwrap();
+fn draw_tape(tape: &Tape, head_position: usize, draw: &Draw) {
+    let symbol_range = head_position.saturating_sub(DISPLAY_TAPE_HALF_WIDTH)
+        ..head_position.saturating_add(DISPLAY_TAPE_HALF_WIDTH);
+
+    let symbols = tape.symbols(symbol_range);
+    for (i, symbol) in symbols.iter().enumerate() {
+        draw_cell(symbol, i, draw);
+    }
 }
 
 #[allow(dead_code)]
-fn draw_tape(_tape: &Tape, _head_position: usize, _draw: &Draw, _frame: &Frame) {
-    todo!()
+fn draw_cell(content: &Symbol, position: usize, draw: &Draw) {
+    draw.rect()
+        .stroke_color(CELL_OUTLINE_COLOR)
+        .stroke_weight(CELL_STROKE_WIDTH)
+        .no_fill()
+        .w(CELL_WIDTH)
+        .h(CELL_HEIGHT)
+        .x_y(CELL_X_OFFSET + CELL_WIDTH * position as f32, CELL_Y_OFFSET);
+
+    let symbol_text = if content.is_empty() {
+        String::default()
+    } else {
+        content.to_string()
+    };
+
+    draw.text(&symbol_text)
+        .x_y(CELL_X_OFFSET + CELL_WIDTH * position as f32, CELL_Y_OFFSET)
+        .center_justify();
 }
 
-#[allow(dead_code)]
-fn draw_cell(_content: &str, _position: usize, _draw: &Draw, _frame: &Frame) {
-    todo!()
-}
+fn draw_machine(machine: &Machine, position: usize, state_as: &DisplayStateAs, draw: &Draw) {
+    let position = CELL_WIDTH * position as f32;
+    let tape_start = TURING_MACHINE_X_OFFSET - DISPLAY_TAPE_HALF_WIDTH as f32 * CELL_WIDTH;
 
-#[allow(dead_code)]
-fn draw_machine(_state: &State, _draw: &Draw, _frame: &Frame) {
-    todo!()
+    // whole machine
+    draw.rect()
+        .stroke_color(CELL_OUTLINE_COLOR)
+        .stroke_weight(CELL_STROKE_WIDTH)
+        .no_fill()
+        .w(TURING_MACHINE_WIDTH)
+        .h(TURING_MACHINE_HEIGHT)
+        .x_y(tape_start + position, -TURING_MACHINE_Y_OFFSET);
+
+    // pointer
+    let pointer_height = TURING_MACHINE_HEIGHT / 4.0;
+    draw.rect()
+        .stroke_color(CELL_OUTLINE_COLOR)
+        .stroke_weight(CELL_STROKE_WIDTH)
+        .no_fill()
+        .w(CELL_WIDTH)
+        .h(TURING_MACHINE_HEIGHT / 4.0)
+        .x_y(
+            tape_start + position,
+            -TURING_MACHINE_Y_OFFSET + TURING_MACHINE_HEIGHT - pointer_height,
+        );
+
+    // state
+    let state = display_state(machine.state, state_as);
+    draw.text(state.as_str())
+        .x_y(tape_start + position, -TURING_MACHINE_Y_OFFSET)
+        .center_justify();
 }

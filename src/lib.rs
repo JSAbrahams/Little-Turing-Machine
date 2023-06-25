@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::iter::FromIterator;
+use std::ops::Range;
 
 pub mod display;
 pub mod presets;
@@ -84,6 +85,10 @@ impl From<usize> for Symbol {
 impl Symbol {
     pub fn empty() -> Self {
         Symbol(None)
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_none()
     }
 }
 
@@ -236,6 +241,11 @@ impl Tape {
     pub fn print_to(&self, len: usize) -> String {
         let symbols = self.read_to(len);
         symbols.iter().map(|i| format!("{i}")).collect::<String>()
+    }
+
+    pub fn symbols(&self, range: Range<usize>) -> Vec<Symbol> {
+        let range = range.start..range.end.min(self.0.len());
+        self.0[range].to_vec()
     }
 }
 
