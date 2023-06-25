@@ -1,7 +1,10 @@
-# Turing Machine
+# Little Turing Machine
 
 Rediscovering my love of computer science.
 A fun little interactive (eventually) Turing machine (with finite tape, of course).
+
+For now, we only allow loading of presets.
+These presets consider of 3, 4, and 5-state 2-symbol busy beavers.
 
 ## Requirements
 
@@ -11,8 +14,8 @@ Rust, may be installed using [rustup](https://www.rust-lang.org/tools/install).
 
 `cargo run`
 
-TODO: Add help message to program
-TODO: Put help message output here
+- TODO: Add help message to program
+- TODO: Put help message output here
 
 Must then type either 3, 4, or 5 to run either 3, 4, or 5-state 2-symbol busy beaver.
 Note that the 5-state busy beaver requires 47.176.870 steps to complete!
