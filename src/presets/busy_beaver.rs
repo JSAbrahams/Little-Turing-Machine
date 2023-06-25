@@ -3,17 +3,9 @@ use std::{collections::HashMap, iter::FromIterator};
 use crate::Action::*;
 use crate::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
 
-pub struct BusyBeaverPacked {
-    pub name: String,
-    pub initial_head: usize,
-    pub symbols: Vec<Symbol>,
-    pub states: Vec<State>,
-    pub display_state_as: HashMap<State, String>,
-    pub transition_function_buidler: TransitionFunctionBuilder,
-    pub universe: Universe,
-}
+use super::UniversePacked;
 
-pub fn three_state_busy_beaver() -> BusyBeaverPacked {
+pub fn three_state_busy_beaver() -> UniversePacked {
     let name = String::from("3-state, 2-symbol busy beaver");
     let initial_head = 1_usize;
 
@@ -43,7 +35,7 @@ pub fn three_state_busy_beaver() -> BusyBeaverPacked {
     let transition_function = builder.build();
     let universe = Universe::new(vec![], initial_head, s_a, transition_function);
 
-    BusyBeaverPacked {
+    UniversePacked {
         name,
         initial_head,
         symbols: vec![s0, s1],
@@ -54,7 +46,7 @@ pub fn three_state_busy_beaver() -> BusyBeaverPacked {
     }
 }
 
-pub fn four_state_busy_beaver() -> BusyBeaverPacked {
+pub fn four_state_busy_beaver() -> UniversePacked {
     let name = String::from("4-state, 2-symbol busy beaver");
     let initial_head = 9_usize;
 
@@ -89,7 +81,7 @@ pub fn four_state_busy_beaver() -> BusyBeaverPacked {
     let transition_function = builder.build();
     let universe = Universe::new(vec![], initial_head, s_a, transition_function);
 
-    BusyBeaverPacked {
+    UniversePacked {
         name,
         initial_head,
         symbols: vec![s0, s1],
@@ -100,9 +92,9 @@ pub fn four_state_busy_beaver() -> BusyBeaverPacked {
     }
 }
 
-pub fn five_state_busy_beaver() -> BusyBeaverPacked {
+pub fn five_state_busy_beaver() -> UniversePacked {
     let name = String::from("5-state, 2-symbol busy beaver");
-    let initial_head = 3000_usize; // eyeball figure
+    let initial_head = 300_usize; // eyeball figure
 
     let s0 = Symbol::empty();
     let s1 = Symbol::from(1);
@@ -140,7 +132,7 @@ pub fn five_state_busy_beaver() -> BusyBeaverPacked {
     let transition_function = builder.build();
     let universe = Universe::new(vec![], initial_head, s_a, transition_function);
 
-    BusyBeaverPacked {
+    UniversePacked {
         name,
         initial_head,
         symbols: vec![s0, s1],
@@ -148,5 +140,19 @@ pub fn five_state_busy_beaver() -> BusyBeaverPacked {
         display_state_as,
         transition_function_buidler: builder,
         universe,
+    }
+}
+
+pub fn pick_beaver(input: &str) -> Option<UniversePacked> {
+    match input {
+        "3" => Some(three_state_busy_beaver()),
+        "4" => Some(four_state_busy_beaver()),
+        "5" => Some(five_state_busy_beaver()),
+        _ => {
+            print!(
+                "{input} is not a valid choice\nPick one of the following busy beavers {{3, 4, 5}}: "
+            );
+            None
+        }
     }
 }

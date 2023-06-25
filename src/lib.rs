@@ -4,6 +4,8 @@ use std::iter::FromIterator;
 
 pub mod presets;
 
+pub mod util;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct State(Option<usize>);
 
