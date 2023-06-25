@@ -9,6 +9,7 @@ These presets consider of 3, 4, and 5-state 2-symbol busy beavers.
 ## Requirements
 
 Rust, may be installed using [rustup](https://www.rust-lang.org/tools/install).
+The above is the reocmmended approach for installing Rust.
 
 ## Running Program
 
@@ -20,7 +21,7 @@ Rust, may be installed using [rustup](https://www.rust-lang.org/tools/install).
 Must then type either 3, 4, or 5 to run either 3, 4, or 5-state 2-symbol busy beaver.
 Note that the 5-state busy beaver requires 47.176.870 steps to complete!
 
-## Partial Output
+## Command Line Output
 
 Example program of a 3-state, 2-symbol busy beaver.
 `!` means halt.
@@ -59,3 +60,7 @@ sequence :: instr :: tape
       13 ::   A   :: 111111
       14 ::   !   :: 111111
 ```
+
+## Animation Output
+
+- TODO: Animation output once done
