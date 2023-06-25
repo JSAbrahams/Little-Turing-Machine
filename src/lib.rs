@@ -281,7 +281,7 @@ impl Universe {
         }
     }
 
-    pub fn tick(&mut self) -> Result<(), String> {
+    pub fn tick(&mut self) -> Result<(Write, Action), String> {
         let scanned_symbol = self.tape.read(self.head);
 
         let (print, action) = self.machine.tick(scanned_symbol)?;
@@ -294,6 +294,6 @@ impl Universe {
             self.shift(action);
         }
 
-        Ok(())
+        Ok((print, action))
     }
 }

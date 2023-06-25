@@ -1,4 +1,4 @@
-use crate::presets::UniverseMetaData;
+use crate::{display::display_state, presets::UniverseMetaData};
 
 pub fn print_machine(busy_beaver_packed: UniverseMetaData) {
     let (name, initial_head) = (busy_beaver_packed.name, busy_beaver_packed.head_offset_hint);
@@ -28,22 +28,13 @@ pub fn print_machine(busy_beaver_packed: UniverseMetaData) {
     println!("transition function:");
     println!("  (current state, scanned symbol) -> (print symbol, move tape, next state)");
 
-    macro_rules! print_state {
-        ($state:expr) => {
-            match $state {
-                x if x.is_halted() => x.to_string(),
-                _ => display_state_as[$state].to_owned(),
-            }
-        };
-    }
-
     for (input, output) in builder.added() {
         let (cur_s, scanned_s) = (
-            display_state_as[&input.current_state()].to_owned(),
+            display_state(input.current_state(), &display_state_as),
             input.scanned_symbol(),
         );
 
-        let next_s = print_state!(&output.next_state());
+        let next_s = display_state(output.next_state(), &display_state_as);
         let (print_s, move_h) = (output.print_symbol(), output.move_head());
         println!("  ({cur_s}, {scanned_s}) -> ({print_s}, {move_h}, {next_s})");
     }
@@ -58,13 +49,13 @@ pub fn print_machine(busy_beaver_packed: UniverseMetaData) {
 
     let mut sequence = 0;
     while !universe.machine.state.is_halted() {
-        let state = print_state!(&universe.machine.state);
+        let state = display_state(universe.machine.state, &display_state_as);
         println!("{sequence:8} :: {state:^5} :: {}", universe.tape);
 
         universe.tick().unwrap();
         sequence += 1;
     }
 
-    let state = print_state!(&universe.machine.state);
+    let state = display_state(universe.machine.state, &display_state_as);
     println!("{sequence:8} :: {state:^5} :: {}", universe.tape);
 }
