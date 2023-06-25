@@ -2,9 +2,8 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::iter::FromIterator;
 
+pub mod display;
 pub mod presets;
-
-pub mod util;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct State(Option<usize>);
