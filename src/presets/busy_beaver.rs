@@ -149,8 +149,8 @@ pub fn pick_beaver(input: &str) -> Option<UniversePacked> {
         "4" => Some(four_state_busy_beaver()),
         "5" => Some(five_state_busy_beaver()),
         _ => {
-            print!(
-                "{input} is not a valid choice\nPick one of the following busy beavers {{3, 4, 5}}: "
+            println!(
+                "{input} is not a valid choice\nPick one of the following busy beavers {{3, 4, 5}}"
             );
             None
         }

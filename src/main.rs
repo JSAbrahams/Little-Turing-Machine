@@ -18,9 +18,9 @@ impl TryFrom<Option<String>> for Mode {
             Some(x) if x == "cli" || x == "c" => Ok(Mode::Cli),
             Some(x) if x == "animation" || x == "a" => Ok(Mode::Animation),
             Some(x) => Err(format!(
-                "{x} is not a valid mode, select 'cli/c' or 'animation/a': "
+                "{x} is not a valid mode, select 'cli/c' or 'animation/a'"
             )),
-            None => Err("Select valid mode, 'cli/c' or 'animation/a': ".to_owned()),
+            None => Err("Select valid mode, 'cli/c' or 'animation/a'".to_owned()),
         }
     }
 }
