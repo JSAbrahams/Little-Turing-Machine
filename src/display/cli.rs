@@ -1,8 +1,8 @@
-use crate::presets::UniversePacked;
+use crate::presets::UniverseMetaData;
 
-pub fn print_machine(busy_beaver_packed: UniversePacked) {
-    let (name, initial_head) = (busy_beaver_packed.name, busy_beaver_packed.initial_head);
-    let (symbols, states) = (busy_beaver_packed.symbols, busy_beaver_packed.states);
+pub fn print_machine(busy_beaver_packed: UniverseMetaData) {
+    let (name, initial_head) = (busy_beaver_packed.name, busy_beaver_packed.head_offset_hint);
+    let (symbols, states) = (busy_beaver_packed.symbol_set, busy_beaver_packed.state_set);
     let display_state_as = busy_beaver_packed.display_state_as;
     let mut universe = busy_beaver_packed.universe;
     let builder = busy_beaver_packed.transition_function_buidler;

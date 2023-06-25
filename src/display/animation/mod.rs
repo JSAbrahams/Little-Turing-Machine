@@ -1,15 +1,33 @@
-use crate::{presets::UniversePacked, TransitionFunctionBuilder, Universe};
+use crate::{presets::UniverseMetaData, Universe};
 
-pub fn animate(_packed_universe: UniversePacked) {
-    todo!();
+use nannou::prelude::*;
+
+/// State used for drawing purposes
+#[allow(dead_code)]
+enum State {
+    Moving,
+    Reading,
+    Writing,
 }
 
 #[allow(dead_code)]
-fn draw_transition_function(_transition_function_buidler: &TransitionFunctionBuilder) {
+struct Model {
+    state: State,
+    universe: Universe,
+}
+
+pub fn animate(_packed_universe: UniverseMetaData) {
+    nannou::app(model).update(update).simple_window(view).run();
+}
+
+fn model(_app: &App) -> Model {
     todo!();
 }
 
-#[allow(dead_code)]
-fn draw_universe(_universe: &Universe) {
+fn update(_app: &App, _model: &mut Model, _update: Update) {
+    todo!();
+}
+
+fn view(_app: &App, _model: &Model, _frame: Frame) {
     todo!();
 }

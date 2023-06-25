@@ -3,7 +3,7 @@ use std::{env, io};
 use turing_machine::display::animation::animate;
 use turing_machine::display::cli::print_machine;
 use turing_machine::presets::busy_beaver::pick_beaver;
-use turing_machine::presets::UniversePacked;
+use turing_machine::presets::UniverseMetaData;
 
 pub enum Mode {
     Cli,
@@ -42,7 +42,7 @@ pub fn main() -> Result<(), String> {
         }
     }?;
 
-    let mut busy_beaver_packed: Option<UniversePacked> = None;
+    let mut busy_beaver_packed: Option<UniverseMetaData> = None;
 
     // check command line args first ...
     if let Some(user_input) = args.get(2) {

@@ -2,4 +2,7 @@
 name = "turing_machine"
 version = "0.0.1"
 authors = ["Joël"]
-edition = "2018"
+edition = "2021"
+
+[dependencies]
+nannou = "0.18.1"
