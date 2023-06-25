@@ -1,6 +1,6 @@
-use crate::{display::display_state, presets::UniverseMetaData};
+use crate::{display::display_state, presets::UniverseMetadata};
 
-pub fn print_machine(busy_beaver_packed: UniverseMetaData) {
+pub fn print_machine(busy_beaver_packed: UniverseMetadata) {
     let (name, initial_head) = (busy_beaver_packed.name, busy_beaver_packed.head_offset_hint);
     let (symbols, states) = (busy_beaver_packed.symbol_set, busy_beaver_packed.state_set);
     let display_state_as = busy_beaver_packed.display_state_as;

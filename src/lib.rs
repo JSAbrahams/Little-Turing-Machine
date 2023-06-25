@@ -5,7 +5,7 @@ use std::iter::FromIterator;
 pub mod display;
 pub mod presets;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct State(Option<usize>);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -31,19 +31,19 @@ pub struct Input(State, Symbol);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Output(Write, Action, State);
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct TransitionFunction(HashMap<Input, Output>);
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Machine {
     pub state: State,
     transition_function: TransitionFunction,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Tape(Vec<Symbol>);
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Universe {
     pub tape: Tape,
     pub head: usize,

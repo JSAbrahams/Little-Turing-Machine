@@ -3,9 +3,9 @@ use std::{collections::HashMap, iter::FromIterator};
 use crate::Action::*;
 use crate::{State, Symbol, TransitionFunctionBuilder, Universe, Write};
 
-use super::UniverseMetaData;
+use super::UniverseMetadata;
 
-pub fn three_state_busy_beaver() -> UniverseMetaData {
+pub fn three_state_busy_beaver() -> UniverseMetadata {
     let name = String::from("3-state, 2-symbol busy beaver");
     let initial_head = 1_usize;
 
@@ -35,7 +35,7 @@ pub fn three_state_busy_beaver() -> UniverseMetaData {
     let transition_function = builder.build();
     let universe = Universe::new(vec![], initial_head, s_a, transition_function);
 
-    UniverseMetaData {
+    UniverseMetadata {
         name,
         head_offset_hint: initial_head,
         symbol_set: vec![s0, s1],
@@ -46,7 +46,7 @@ pub fn three_state_busy_beaver() -> UniverseMetaData {
     }
 }
 
-pub fn four_state_busy_beaver() -> UniverseMetaData {
+pub fn four_state_busy_beaver() -> UniverseMetadata {
     let name = String::from("4-state, 2-symbol busy beaver");
     let initial_head = 9_usize;
 
@@ -81,7 +81,7 @@ pub fn four_state_busy_beaver() -> UniverseMetaData {
     let transition_function = builder.build();
     let universe = Universe::new(vec![], initial_head, s_a, transition_function);
 
-    UniverseMetaData {
+    UniverseMetadata {
         name,
         head_offset_hint: initial_head,
         symbol_set: vec![s0, s1],
@@ -92,7 +92,7 @@ pub fn four_state_busy_beaver() -> UniverseMetaData {
     }
 }
 
-pub fn five_state_busy_beaver() -> UniverseMetaData {
+pub fn five_state_busy_beaver() -> UniverseMetadata {
     let name = String::from("5-state, 2-symbol busy beaver");
     let initial_head = 300_usize; // eyeball figure
 
@@ -132,7 +132,7 @@ pub fn five_state_busy_beaver() -> UniverseMetaData {
     let transition_function = builder.build();
     let universe = Universe::new(vec![], initial_head, s_a, transition_function);
 
-    UniverseMetaData {
+    UniverseMetadata {
         name,
         head_offset_hint: initial_head,
         symbol_set: vec![s0, s1],
@@ -143,7 +143,7 @@ pub fn five_state_busy_beaver() -> UniverseMetaData {
     }
 }
 
-pub fn pick_beaver(input: &str) -> Option<UniverseMetaData> {
+pub fn pick_beaver(input: &str) -> Option<UniverseMetadata> {
     match input {
         "3" => Some(three_state_busy_beaver()),
         "4" => Some(four_state_busy_beaver()),

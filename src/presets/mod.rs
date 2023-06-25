@@ -5,7 +5,7 @@ use crate::{State, Symbol, TransitionFunctionBuilder, Universe};
 pub mod busy_beaver;
 
 /// Universe with some metadata for more elegant views.
-pub struct UniverseMetaData {
+pub struct UniverseMetadata {
     pub name: String,
     pub head_offset_hint: usize,
     pub symbol_set: Vec<Symbol>,
