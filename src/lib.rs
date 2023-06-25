@@ -34,13 +34,16 @@ pub struct Output(Write, Action, State);
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TransitionFunction(HashMap<Input, Output>);
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Machine {
     pub state: State,
     transition_function: TransitionFunction,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tape(Vec<Symbol>);
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Universe {
     pub tape: Tape,
     pub head: usize,

@@ -23,6 +23,8 @@ Note that the 5-state busy beaver requires 47.176.870 steps to complete!
 
 ## Command Line Output
 
+To the the following: `cargo run c 3`
+
 Example program of a 3-state, 2-symbol busy beaver.
 `!` means halt.
 
@@ -62,5 +64,7 @@ sequence :: instr :: tape
 ```
 
 ## Animation Output
+
+To get the following: `cargo run a 3`
 
 - TODO: Animation output once done

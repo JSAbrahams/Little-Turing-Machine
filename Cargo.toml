@@ -1,5 +1,5 @@
 [package]
-name = "turing_machine"
+name = "little_turing_machine"
 version = "0.0.1"
 authors = ["Joël"]
 edition = "2021"
