@@ -1,7 +1,7 @@
 use crate::{display::display_state, presets::UniverseMetadata};
 
 pub fn print_machine(busy_beaver_packed: UniverseMetadata) {
-    let (name, initial_head) = (busy_beaver_packed.name, busy_beaver_packed.head_offset_hint);
+    let name = busy_beaver_packed.name;
     let (symbols, states) = (busy_beaver_packed.symbol_set, busy_beaver_packed.state_set);
     let display_state_as = busy_beaver_packed.display_state_as;
     let mut universe = busy_beaver_packed.universe;
@@ -40,22 +40,23 @@ pub fn print_machine(busy_beaver_packed: UniverseMetadata) {
     }
 
     println!("\ncomputation");
-    println!("sequence :: instr :: tape");
-    println!(
-        "{:>width$} -> $ (start position)",
-        "HEAD",
-        width = 21 - 4 + initial_head
-    );
+    println!("sequence :: instr :: HEAD :: tape");
 
     let mut sequence = 0;
     while !universe.machine.state.is_halted() {
         let state = display_state(universe.machine.state, &display_state_as);
-        println!("{sequence:8} :: {state:^5} :: {}", universe.tape);
+        println!(
+            "{sequence:8} :: {state:^5} :: {:^4} :: {}",
+            universe.pos, universe.tape
+        );
 
         universe.tick().unwrap();
         sequence += 1;
     }
 
     let state = display_state(universe.machine.state, &display_state_as);
-    println!("{sequence:8} :: {state:^5} :: {}", universe.tape);
+    println!(
+        "{sequence:8} :: {state:^5} :: {:^4} :: {}",
+        universe.pos, universe.tape
+    );
 }

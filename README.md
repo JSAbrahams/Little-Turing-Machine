@@ -32,7 +32,6 @@ Example program of a 3-state, 2-symbol busy beaver.
 machine: 3-state, 2-symbol busy beaver
 symbols: _ 1
 states: A B C
-initial tape:
 initial state: A
 transition function:
   (current state, scanned symbol) -> (print symbol, move tape, next state)
@@ -44,23 +43,22 @@ transition function:
   (C, 1) -> (W(1), L, A)
 
 computation
-sequence :: instr :: tape
-              HEAD -> $
-       0 ::   A   ::
-       1 ::   B   :: _1
-       2 ::   C   :: _1_
-       3 ::   C   :: _1_1
-       4 ::   C   :: _111
-       5 ::   A   :: _111
-       6 ::   B   :: 1111
-       7 ::   B   :: 1111
-       8 ::   B   :: 1111
-       9 ::   B   :: 1111
-      10 ::   C   :: 1111_
-      11 ::   C   :: 1111_1
-      12 ::   C   :: 111111
-      13 ::   A   :: 111111
-      14 ::   !   :: 111111
+sequence :: instr :: HEAD :: tape
+       0 ::   A   ::  1   ::
+       1 ::   B   ::  2   :: _1
+       2 ::   C   ::  3   :: _1_
+       3 ::   C   ::  2   :: _1_1
+       4 ::   C   ::  1   :: _111
+       5 ::   A   ::  0   :: _111
+       6 ::   B   ::  1   :: 1111
+       7 ::   B   ::  2   :: 1111
+       8 ::   B   ::  3   :: 1111
+       9 ::   B   ::  4   :: 1111
+      10 ::   C   ::  5   :: 1111_
+      11 ::   C   ::  4   :: 1111_1
+      12 ::   C   ::  3   :: 111111
+      13 ::   A   ::  2   :: 111111
+      14 ::   !   ::  3   :: 111111
 ```
 
 ## Animation Output
