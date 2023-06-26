@@ -42,27 +42,27 @@ pub fn main() -> Result<(), String> {
         }
     }?;
 
-    let mut busy_beaver_packed: Option<UniverseMetadata> = None;
+    let mut picked: Option<UniverseMetadata> = None;
 
     // check command line args first ...
     if let Some(user_input) = args.get(2) {
         let input = user_input.as_str().trim();
-        busy_beaver_packed = pick_beaver(input);
+        picked = pick_beaver(input);
     }
 
     // ... then do interactive stuff
     let stdin = io::stdin();
     let mut user_input = String::new();
-    while busy_beaver_packed.is_none() {
+    while picked.is_none() {
         stdin.read_line(&mut user_input).unwrap();
         let input = user_input.as_str().trim();
-        busy_beaver_packed = pick_beaver(input);
+        picked = pick_beaver(input);
 
         user_input.clear();
         println!()
     }
 
-    if let Some(busy_beaver_packed) = busy_beaver_packed {
+    if let Some(busy_beaver_packed) = picked {
         match mode {
             Mode::Cli => print_machine(busy_beaver_packed),
             Mode::Animation => animate(busy_beaver_packed, None),

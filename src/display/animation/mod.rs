@@ -22,9 +22,9 @@ const CELL_STROKE_WIDTH: f32 = 1_f32;
 const TURING_MACHINE_HEIGHT: f32 = 40_f32;
 const TURING_MACHINE_WIDTH: f32 = 40_f32;
 const TURING_MACHINE_X_OFFSET: f32 = CELL_WIDTH * DISPLAY_TAPE_HALF_WIDTH as f32 + CELL_X_OFFSET;
-const TURING_MACHINE_Y_OFFSET: f32 = 0_f32;
 
-const CELL_Y_OFFSET: f32 = TURING_MACHINE_Y_OFFSET + TURING_MACHINE_HEIGHT + 10_f32;
+const TURING_MACHINE_Y_OFFSET: f32 = -CELL_HEIGHT - CELL_HEIGHT;
+const CELL_Y_OFFSET: f32 = 0.0;
 
 const CELL_OUTLINE_COLOR: nannou::prelude::rgb::Srgb<u8> = STEELBLUE;
 
@@ -201,17 +201,13 @@ fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, d
         .x_y(tape_start + position, -TURING_MACHINE_Y_OFFSET);
 
     // pointer
-    let pointer_height = TURING_MACHINE_HEIGHT / 4.0;
     draw.rect()
         .stroke_color(CELL_OUTLINE_COLOR)
         .stroke_weight(CELL_STROKE_WIDTH)
         .no_fill()
-        .w(CELL_WIDTH)
-        .h(TURING_MACHINE_HEIGHT / 4.0)
-        .x_y(
-            tape_start + position,
-            -TURING_MACHINE_Y_OFFSET + TURING_MACHINE_HEIGHT - pointer_height,
-        );
+        .w(CELL_WIDTH + CELL_WIDTH / 4.0)
+        .h(CELL_HEIGHT + CELL_HEIGHT / 4.0)
+        .x_y(tape_start + position, CELL_Y_OFFSET);
 
     // state
     let state = display_state(machine.state, state_as);

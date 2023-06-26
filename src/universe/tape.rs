@@ -20,7 +20,7 @@ impl PartialEq for Tape {
             let to = symbols
                 .iter()
                 .rposition(|s| !s.is_empty())
-                .unwrap_or_else(|| symbols.len());
+                .unwrap_or(symbols.len());
             symbols[from..to].to_vec()
         };
 
