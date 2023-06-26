@@ -1,7 +1,9 @@
+use std::default::Default;
 use std::sync::Mutex;
 use std::{collections::VecDeque, time::Duration};
 
 use crate::presets::UniverseMetadata;
+use crate::universe::function::{Input, Output, TransitionFunctionBuilder};
 use crate::universe::machine::{Action, Machine, Write};
 use crate::universe::tape::Tape;
 use crate::universe::{Symbol, Universe};
@@ -14,6 +16,9 @@ use super::{display_state, DisplayStateAs};
 const DEFAULT_TICK_SPEED: Duration = Duration::from_secs(1);
 const DISPLAY_TAPE_HALF_WIDTH: usize = 25;
 
+const TRANSITION_FUNCTION_LINE_HEIGHT: f32 = 15_f32;
+const TRANSITION_FUNCTION_X_OFFSET: f32 = -0_f32;
+
 const CELL_WIDTH: f32 = 20_f32;
 const CELL_HEIGHT: f32 = 20_f32;
 const CELL_X_OFFSET: f32 = 0_f32;
@@ -25,6 +30,7 @@ const TURING_MACHINE_X_OFFSET: f32 = CELL_WIDTH * DISPLAY_TAPE_HALF_WIDTH as f32
 
 const TURING_MACHINE_Y_OFFSET: f32 = -CELL_HEIGHT - CELL_HEIGHT;
 const CELL_Y_OFFSET: f32 = 0.0;
+const TRANSITION_FUNCTION_Y_OFFSET: f32 = 1.5 * TURING_MACHINE_HEIGHT + CELL_HEIGHT;
 
 const CELL_OUTLINE_COLOR: nannou::prelude::rgb::Srgb<u8> = STEELBLUE;
 
@@ -50,6 +56,7 @@ enum State {
 #[allow(dead_code)]
 #[derive(Debug, Default, Clone)]
 struct Model {
+    builder: TransitionFunctionBuilder,
     animation_queue: VecDeque<State>,
     state_as: DisplayStateAs,
     universe: Universe,
@@ -58,6 +65,7 @@ struct Model {
 impl From<UniverseMetadata> for Model {
     fn from(value: UniverseMetadata) -> Self {
         Model {
+            builder: value.transition_function_buidler,
             universe: value.universe,
             state_as: value.display_state_as,
             ..Default::default()
@@ -122,6 +130,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     // reset background
     draw.background().color(BLACK);
 
+    draw_transition_function(&model.builder, &model.state_as, &draw);
     draw_tape(&model.universe.tape, model.universe.pos, &draw);
     draw_machine(
         &model.universe.machine,
@@ -214,4 +223,32 @@ fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, d
     draw.text(state.as_str())
         .x_y(tape_start + position, -TURING_MACHINE_Y_OFFSET)
         .center_justify();
+}
+
+fn draw_transition_function(
+    builder: &TransitionFunctionBuilder,
+    state_as: &DisplayStateAs,
+    draw: &Draw,
+) {
+    for (pos, (input, output)) in builder.added().iter().rev().enumerate() {
+        draw_function_line(*input, *output, pos, state_as, draw)
+    }
+}
+
+fn draw_function_line(
+    input: Input,
+    output: Output,
+    pos: usize,
+    state_as: &DisplayStateAs,
+    draw: &Draw,
+) {
+    let (state, symbol) = (display_state(input.0, state_as), input.1);
+    let (write, action, o_state) = (output.0, output.1, display_state(output.2, state_as));
+
+    draw.text(format!("{state}, {symbol} -> {write}, {action}, {o_state}").as_str())
+        .x_y(
+            TRANSITION_FUNCTION_X_OFFSET,
+            TRANSITION_FUNCTION_Y_OFFSET + (TRANSITION_FUNCTION_LINE_HEIGHT * pos as f32),
+        )
+        .left_justify();
 }

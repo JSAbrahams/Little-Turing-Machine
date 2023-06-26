@@ -12,7 +12,7 @@ pub struct Output(pub Write, pub Action, pub State);
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct TransitionFunction(HashMap<Input, Output>);
 
-#[derive(Default)]
+#[derive(Debug, Default, Clone)]
 pub struct TransitionFunctionBuilder(Vec<(Input, Output)>);
 
 impl TransitionFunction {
