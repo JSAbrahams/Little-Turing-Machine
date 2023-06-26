@@ -181,7 +181,7 @@ fn draw_cell(content: &Symbol, position: usize, draw: &Draw) {
 }
 
 fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, draw: &Draw) {
-    let position = CELL_WIDTH * position as f32;
+    let position = CELL_WIDTH * (position - 1) as f32;
     let tape_start = TURING_MACHINE_X_OFFSET - DISPLAY_TAPE_HALF_WIDTH as f32 * CELL_WIDTH;
 
     // whole machine
