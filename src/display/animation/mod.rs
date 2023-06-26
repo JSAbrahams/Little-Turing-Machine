@@ -152,23 +152,30 @@ fn draw_debug_info(draw: &Draw, model: &Model) {
 fn draw_tape(tape: &Tape, pos: isize, draw: &Draw) {
     let symbol_range = pos.saturating_sub(DISPLAY_TAPE_HALF_WIDTH as isize)
         ..pos.saturating_add(DISPLAY_TAPE_HALF_WIDTH as isize);
+    let draw_range =
+        (-(DISPLAY_TAPE_HALF_WIDTH as isize)).min(pos)..(DISPLAY_TAPE_HALF_WIDTH as isize).max(pos);
+
+    for pos in draw_range {
+        draw_cell(pos, draw)
+    }
 
     let symbols = tape.symbols(symbol_range);
-    for (i, symbol) in symbols.iter().enumerate() {
-        draw_cell(symbol, i, draw);
+    for (pos, symbol) in symbols.iter().enumerate() {
+        draw_symbol(symbol, pos, draw);
     }
 }
 
-#[allow(dead_code)]
-fn draw_cell(content: &Symbol, position: usize, draw: &Draw) {
+fn draw_cell(pos: isize, draw: &Draw) {
     draw.rect()
         .stroke_color(CELL_OUTLINE_COLOR)
         .stroke_weight(CELL_STROKE_WIDTH)
         .no_fill()
         .w(CELL_WIDTH)
         .h(CELL_HEIGHT)
-        .x_y(CELL_X_OFFSET + CELL_WIDTH * position as f32, CELL_Y_OFFSET);
+        .x_y(CELL_X_OFFSET + CELL_WIDTH * pos as f32, CELL_Y_OFFSET);
+}
 
+fn draw_symbol(content: &Symbol, pos: usize, draw: &Draw) {
     let symbol_text = if content.is_empty() {
         String::default()
     } else {
@@ -176,7 +183,7 @@ fn draw_cell(content: &Symbol, position: usize, draw: &Draw) {
     };
 
     draw.text(&symbol_text)
-        .x_y(CELL_X_OFFSET + CELL_WIDTH * position as f32, CELL_Y_OFFSET)
+        .x_y(CELL_X_OFFSET + CELL_WIDTH * pos as f32, CELL_Y_OFFSET)
         .center_justify();
 }
 
