@@ -2,7 +2,9 @@ use std::sync::Mutex;
 use std::{collections::VecDeque, time::Duration};
 
 use crate::presets::UniverseMetadata;
-use crate::{Action, Machine, Symbol, Tape, Universe};
+use crate::universe::machine::{Action, Machine, Write};
+use crate::universe::tape::Tape;
+use crate::universe::{Symbol, Universe};
 
 use nannou::prelude::*;
 use once_cell::sync::OnceCell;
@@ -97,9 +99,9 @@ fn update(_app: &App, model: &mut Model, _update: Update) {
     let queue = &mut model.animation_queue;
     let (print, action) = model.universe.tick().unwrap();
     queue.push_back(match print {
-        crate::Write::Print(x) => State::Writing(format!("{x}")),
-        crate::Write::Erase => State::Erasing,
-        crate::Write::None => State::Halted,
+        Write::Print(x) => State::Writing(format!("{x}")),
+        Write::Erase => State::Erasing,
+        Write::None => State::Halted,
     });
 
     match action {
@@ -120,10 +122,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
     // reset background
     draw.background().color(BLACK);
 
-    draw_tape(&model.universe.tape, model.universe.head, &draw);
+    draw_tape(&model.universe.tape, model.universe.pos, &draw);
     draw_machine(
         &model.universe.machine,
-        model.universe.head,
+        model.universe.pos,
         &model.state_as,
         &draw,
     );
@@ -134,17 +136,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
 #[allow(dead_code)]
 fn draw_debug_info(draw: &Draw, model: &Model) {
     // print debug info
-    let head_symbol = format!(
-        "{}{} [{}]",
-        "_".repeat(6 - 1 + model.universe.head),
-        "$",
-        display_state(model.universe.machine.state, &model.state_as)
-    );
     draw.text(
         format!(
-            "head position: {}\n{}\ntape: {}\nmachine state: {}\ndraw state: {:?}",
-            model.universe.head,
-            head_symbol,
+            "head position: {}\ntape: {}\nmachine state: {}\ndraw state: {:?}",
+            model.universe.pos,
             model.universe.tape,
             display_state(model.universe.machine.state, &model.state_as),
             model.animation_queue.back()
@@ -154,9 +149,9 @@ fn draw_debug_info(draw: &Draw, model: &Model) {
     .left_justify();
 }
 
-fn draw_tape(tape: &Tape, head_position: usize, draw: &Draw) {
-    let symbol_range = head_position.saturating_sub(DISPLAY_TAPE_HALF_WIDTH)
-        ..head_position.saturating_add(DISPLAY_TAPE_HALF_WIDTH);
+fn draw_tape(tape: &Tape, pos: isize, draw: &Draw) {
+    let symbol_range = pos.saturating_sub(DISPLAY_TAPE_HALF_WIDTH as isize)
+        ..pos.saturating_add(DISPLAY_TAPE_HALF_WIDTH as isize);
 
     let symbols = tape.symbols(symbol_range);
     for (i, symbol) in symbols.iter().enumerate() {
@@ -185,7 +180,7 @@ fn draw_cell(content: &Symbol, position: usize, draw: &Draw) {
         .center_justify();
 }
 
-fn draw_machine(machine: &Machine, position: usize, state_as: &DisplayStateAs, draw: &Draw) {
+fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, draw: &Draw) {
     let position = CELL_WIDTH * position as f32;
     let tape_start = TURING_MACHINE_X_OFFSET - DISPLAY_TAPE_HALF_WIDTH as f32 * CELL_WIDTH;
 

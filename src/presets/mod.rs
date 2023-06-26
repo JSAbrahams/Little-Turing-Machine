@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use crate::{State, Symbol, TransitionFunctionBuilder, Universe};
+use crate::universe::function::TransitionFunctionBuilder;
+use crate::universe::machine::State;
+use crate::universe::{Symbol, Universe};
 
 pub mod busy_beaver;
 

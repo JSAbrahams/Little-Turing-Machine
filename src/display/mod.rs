@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::State;
+use crate::universe::machine::State;
 
 pub mod animation;
 pub mod cli;
