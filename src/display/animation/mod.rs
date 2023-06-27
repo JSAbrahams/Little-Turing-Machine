@@ -13,6 +13,8 @@ use once_cell::sync::OnceCell;
 
 use super::{display_state, DisplayStateAs};
 
+const WINDOW_TITLE: &str = "My Little Turing Machine";
+
 const DEFAULT_TICK_SPEED: Duration = Duration::from_secs(1);
 const DISPLAY_TAPE_HALF_WIDTH: usize = 250;
 
@@ -83,7 +85,6 @@ pub fn animate(metadata: UniverseMetadata, tick_speed: Option<Duration>) {
         .loop_mode(LoopMode::Rate {
             update_interval: tick_speed.unwrap_or(DEFAULT_TICK_SPEED),
         })
-        .simple_window(view)
         .run();
 }
 
@@ -95,7 +96,13 @@ fn set_model(metadata: UniverseMetadata) {
 /// Panics if model was never set.
 ///
 /// Workaround because we cannot pass to api as argument, and we cannot capture variables in closures.
-fn model(_app: &App) -> Model {
+fn model(app: &App) -> Model {
+    app.new_window()
+        .title(WINDOW_TITLE)
+        .view(view)
+        .build()
+        .unwrap();
+
     let model = MODEL.get_or_init(|| Mutex::new(Model::default()));
     model.lock().unwrap().clone()
 }
