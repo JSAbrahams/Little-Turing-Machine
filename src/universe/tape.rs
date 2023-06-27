@@ -113,6 +113,11 @@ impl Tape {
         symbols.append(&mut self.positive[pos_range].to_vec());
         symbols
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.positive.is_empty() && self.negative.is_empty()
+            || self.all_symbols().iter().all(|s| s.is_empty())
+    }
 }
 
 #[cfg(test)]
@@ -234,5 +239,15 @@ mod tests {
         tape.write(Write::Print(Symbol::from(3)), index);
 
         assert_eq!(tape.read(index), Symbol::from(3));
+    }
+
+    #[test]
+    fn empty_tape_is_empty() {
+        assert!(Tape::default().is_empty());
+    }
+
+    #[test]
+    fn tape_only_empty_symbol_is_empty() {
+        assert!(Tape::from_iter([Symbol::empty(), Symbol::empty()]).is_empty());
     }
 }

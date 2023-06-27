@@ -64,9 +64,14 @@ struct Model {
 
 impl From<UniverseMetadata> for Model {
     fn from(value: UniverseMetadata) -> Self {
+        let mut universe = value.universe;
+        if universe.tape.is_empty() {
+            universe.pos = 0;
+        };
+
         Model {
             builder: value.transition_function_buidler,
-            universe: value.universe,
+            universe,
             state_as: value.display_state_as,
             ..Default::default()
         }
