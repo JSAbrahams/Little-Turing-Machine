@@ -14,19 +14,16 @@ use once_cell::sync::OnceCell;
 use super::{display_state, DisplayStateAs};
 
 const DEFAULT_TICK_SPEED: Duration = Duration::from_secs(1);
-const DISPLAY_TAPE_HALF_WIDTH: usize = 25;
+const DISPLAY_TAPE_HALF_WIDTH: usize = 250;
 
 const TRANSITION_FUNCTION_LINE_HEIGHT: f32 = 15_f32;
-const TRANSITION_FUNCTION_X_OFFSET: f32 = -0_f32;
 
 const CELL_WIDTH: f32 = 20_f32;
 const CELL_HEIGHT: f32 = 20_f32;
-const CELL_X_OFFSET: f32 = 0_f32;
 const CELL_STROKE_WIDTH: f32 = 1_f32;
 
 const TURING_MACHINE_HEIGHT: f32 = 40_f32;
 const TURING_MACHINE_WIDTH: f32 = 40_f32;
-const TURING_MACHINE_X_OFFSET: f32 = CELL_WIDTH * DISPLAY_TAPE_HALF_WIDTH as f32 + CELL_X_OFFSET;
 
 const TURING_MACHINE_Y_OFFSET: f32 = -CELL_HEIGHT - CELL_HEIGHT;
 const CELL_Y_OFFSET: f32 = 0.0;
@@ -164,8 +161,6 @@ fn draw_debug_info(draw: &Draw, model: &Model) {
 }
 
 fn draw_tape(tape: &Tape, pos: isize, draw: &Draw) {
-    let symbol_range = pos.saturating_sub(DISPLAY_TAPE_HALF_WIDTH as isize)
-        ..pos.saturating_add(DISPLAY_TAPE_HALF_WIDTH as isize);
     let draw_range =
         (-(DISPLAY_TAPE_HALF_WIDTH as isize)).min(pos)..(DISPLAY_TAPE_HALF_WIDTH as isize).max(pos);
 
@@ -173,9 +168,14 @@ fn draw_tape(tape: &Tape, pos: isize, draw: &Draw) {
         draw_cell(pos, draw)
     }
 
-    let symbols = tape.symbols(symbol_range);
+    let symbols = tape.second_half();
     for (pos, symbol) in symbols.iter().enumerate() {
-        draw_symbol(symbol, pos, draw);
+        draw_symbol(symbol, pos as isize + 1, draw);
+    }
+
+    let symbols = tape.first_half();
+    for (pos, symbol) in symbols.iter().enumerate() {
+        draw_symbol(symbol, -(pos as isize), draw);
     }
 }
 
@@ -186,10 +186,10 @@ fn draw_cell(pos: isize, draw: &Draw) {
         .no_fill()
         .w(CELL_WIDTH)
         .h(CELL_HEIGHT)
-        .x_y(CELL_X_OFFSET + CELL_WIDTH * pos as f32, CELL_Y_OFFSET);
+        .x_y(CELL_WIDTH * pos as f32, CELL_Y_OFFSET);
 }
 
-fn draw_symbol(content: &Symbol, pos: usize, draw: &Draw) {
+fn draw_symbol(content: &Symbol, pos: isize, draw: &Draw) {
     let symbol_text = if content.is_empty() {
         String::default()
     } else {
@@ -197,13 +197,12 @@ fn draw_symbol(content: &Symbol, pos: usize, draw: &Draw) {
     };
 
     draw.text(&symbol_text)
-        .x_y(CELL_X_OFFSET + CELL_WIDTH * pos as f32, CELL_Y_OFFSET)
+        .x_y(CELL_WIDTH * pos as f32, CELL_Y_OFFSET)
         .center_justify();
 }
 
 fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, draw: &Draw) {
     let position = CELL_WIDTH * (position - 1) as f32;
-    let tape_start = TURING_MACHINE_X_OFFSET - DISPLAY_TAPE_HALF_WIDTH as f32 * CELL_WIDTH;
 
     // whole machine
     draw.rect()
@@ -212,7 +211,7 @@ fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, d
         .no_fill()
         .w(TURING_MACHINE_WIDTH)
         .h(TURING_MACHINE_HEIGHT)
-        .x_y(tape_start + position, -TURING_MACHINE_Y_OFFSET);
+        .x_y(position, -TURING_MACHINE_Y_OFFSET);
 
     // pointer
     draw.rect()
@@ -221,12 +220,12 @@ fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, d
         .no_fill()
         .w(CELL_WIDTH + CELL_WIDTH / 4.0)
         .h(CELL_HEIGHT + CELL_HEIGHT / 4.0)
-        .x_y(tape_start + position, CELL_Y_OFFSET);
+        .x_y(position, CELL_Y_OFFSET);
 
     // state
     let state = display_state(machine.state, state_as);
     draw.text(state.as_str())
-        .x_y(tape_start + position, -TURING_MACHINE_Y_OFFSET)
+        .x_y(position, -TURING_MACHINE_Y_OFFSET)
         .center_justify();
 }
 
@@ -252,7 +251,7 @@ fn draw_function_line(
 
     draw.text(format!("{state}, {symbol} -> {write}, {action}, {o_state}").as_str())
         .x_y(
-            TRANSITION_FUNCTION_X_OFFSET,
+            0_f32,
             TRANSITION_FUNCTION_Y_OFFSET + (TRANSITION_FUNCTION_LINE_HEIGHT * pos as f32),
         )
         .left_justify();

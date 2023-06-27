@@ -114,6 +114,18 @@ impl Tape {
         symbols
     }
 
+    pub fn first_half(&self) -> Vec<Symbol> {
+        if self.negative.is_empty() {
+            vec![Symbol::empty()]
+        } else {
+            self.negative.clone()
+        }
+    }
+
+    pub fn second_half(&self) -> Vec<Symbol> {
+        self.positive.clone()
+    }
+
     pub fn is_empty(&self) -> bool {
         self.positive.is_empty() && self.negative.is_empty()
             || self.all_symbols().iter().all(|s| s.is_empty())
