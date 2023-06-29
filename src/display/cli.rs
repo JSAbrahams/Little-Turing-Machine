@@ -29,13 +29,10 @@ pub fn print_machine(busy_beaver_packed: UniverseMetadata) {
     println!("  (current state, scanned symbol) -> (print symbol, move tape, next state)");
 
     for (input, output) in builder.added() {
-        let (cur_s, scanned_s) = (
-            display_state(input.current_state(), &display_state_as),
-            input.scanned_symbol(),
-        );
+        let (cur_s, scanned_s) = (display_state(input.state, &display_state_as), input.symbol);
 
-        let next_s = display_state(output.next_state(), &display_state_as);
-        let (print_s, move_h) = (output.print_symbol(), output.move_head());
+        let next_s = display_state(output.state, &display_state_as);
+        let (print_s, move_h) = (output.write, output.action);
         println!("  ({cur_s}, {scanned_s}) -> ({print_s}, {move_h}, {next_s})");
     }
 

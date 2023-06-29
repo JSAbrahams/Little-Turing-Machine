@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use super::function::{Output, TransitionFunction};
+use super::function::TransitionFunction;
 use super::Symbol;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -39,11 +39,10 @@ impl Machine {
             return Ok((Write::None, Action::N));
         }
 
-        let Output(print, action, state) =
-            self.transition_function.act(self.state, scanned_symbol)?;
+        let output = self.transition_function.act(self.state, scanned_symbol)?;
 
-        self.state = state;
-        Ok((print, action))
+        self.state = output.state;
+        Ok((output.write, output.action))
     }
 }
 
@@ -100,7 +99,7 @@ impl State {
 
 #[cfg(test)]
 mod tests {
-    use crate::universe::machine::{State, Write};
+    use crate::universe::machine::{Action, State, Write};
     use crate::universe::Symbol;
 
     #[test]
@@ -131,5 +130,12 @@ mod tests {
             Write::Print(Symbol::from(10)).to_string(),
             String::from("W(10)")
         );
+    }
+
+    #[test]
+    fn print_action() {
+        assert_eq!(Action::L.to_string(), String::from("L"));
+        assert_eq!(Action::R.to_string(), String::from("R"));
+        assert_eq!(Action::N.to_string(), String::from("N"));
     }
 }

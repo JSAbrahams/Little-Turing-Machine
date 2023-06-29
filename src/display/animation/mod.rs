@@ -253,8 +253,12 @@ fn draw_function_line(
     state_as: &DisplayStateAs,
     draw: &Draw,
 ) {
-    let (state, symbol) = (display_state(input.0, state_as), input.1);
-    let (write, action, o_state) = (output.0, output.1, display_state(output.2, state_as));
+    let (state, symbol) = (display_state(input.state, state_as), input.symbol);
+    let (write, action, o_state) = (
+        output.write,
+        output.action,
+        display_state(output.state, state_as),
+    );
 
     draw.text(format!("{state}, {symbol} -> {write}, {action}, {o_state}").as_str())
         .x_y(
