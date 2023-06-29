@@ -263,3 +263,25 @@ fn draw_function_line(
         )
         .left_justify();
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::presets::busy_beaver::three_state_busy_beaver;
+
+    use super::Model;
+
+    #[test]
+    fn model_from_beaver_3_universe_meta() {
+        let beaver = three_state_busy_beaver();
+        let model = Model::from(three_state_busy_beaver());
+
+        assert!(model.animation_queue.is_empty());
+        assert_eq!(
+            model.builder.build(),
+            beaver.transition_function_buidler.build()
+        );
+
+        assert_eq!(model.universe.tape, beaver.universe.tape);
+        assert_eq!(model.universe.machine, beaver.universe.machine);
+    }
+}
