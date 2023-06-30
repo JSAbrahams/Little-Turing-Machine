@@ -137,17 +137,14 @@ fn view(app: &App, model: &Model, frame: Frame) {
     };
 
     let draw = app.draw();
+    let universe = &model.universe;
+
     // reset background
     draw.background().color(BLACK);
 
     draw_transition_function(&model.builder, &model.state_as, &draw);
-    draw_tape(
-        &model.universe.tape,
-        model.universe.pos,
-        model.universe.pos,
-        &draw,
-    );
-    draw_machine(&model.universe.machine, 0, &model.state_as, &draw);
+    draw_tape(&universe.tape, universe.pos, universe.pos, &draw);
+    draw_machine(&universe.machine, 0, &model.state_as, &draw);
 
     draw.to_frame(app, &frame).unwrap();
 }
