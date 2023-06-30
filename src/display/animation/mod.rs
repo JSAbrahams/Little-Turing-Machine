@@ -16,7 +16,7 @@ use super::{display_state, DisplayStateAs};
 const WINDOW_TITLE: &str = "My Little Turing Machine";
 
 const DEFAULT_TICK_SPEED: Duration = Duration::from_secs(1);
-const DISPLAY_TAPE_HALF_WIDTH: usize = 250;
+const DISPLAY_TAPE_HALF_WIDTH: usize = 50;
 
 const TRANSITION_FUNCTION_LINE_HEIGHT: f32 = 15_f32;
 
