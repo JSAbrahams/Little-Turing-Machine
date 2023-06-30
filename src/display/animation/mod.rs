@@ -100,6 +100,7 @@ fn model(app: &App) -> Model {
     app.new_window()
         .title(WINDOW_TITLE)
         .view(view)
+        .fullscreen()
         .build()
         .unwrap();
 
@@ -140,13 +141,13 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(BLACK);
 
     draw_transition_function(&model.builder, &model.state_as, &draw);
-    draw_tape(&model.universe.tape, model.universe.pos, &draw);
-    draw_machine(
-        &model.universe.machine,
+    draw_tape(
+        &model.universe.tape,
         model.universe.pos,
-        &model.state_as,
+        model.universe.pos,
         &draw,
     );
+    draw_machine(&model.universe.machine, 0, &model.state_as, &draw);
 
     draw.to_frame(app, &frame).unwrap();
 }
@@ -167,7 +168,7 @@ fn draw_debug_info(draw: &Draw, model: &Model) {
     .left_justify();
 }
 
-fn draw_tape(tape: &Tape, pos: isize, draw: &Draw) {
+fn draw_tape(tape: &Tape, pos: isize, offset: isize, draw: &Draw) {
     let draw_range =
         (-(DISPLAY_TAPE_HALF_WIDTH as isize)).min(pos)..(DISPLAY_TAPE_HALF_WIDTH as isize).max(pos);
 
@@ -177,12 +178,12 @@ fn draw_tape(tape: &Tape, pos: isize, draw: &Draw) {
 
     let symbols = tape.second_half();
     for (pos, symbol) in symbols.iter().enumerate() {
-        draw_symbol(symbol, pos as isize + 1, draw);
+        draw_symbol(symbol, pos as isize + 1 - offset, draw);
     }
 
     let symbols = tape.first_half();
     for (pos, symbol) in symbols.iter().enumerate() {
-        draw_symbol(symbol, -(pos as isize), draw);
+        draw_symbol(symbol, -(pos as isize) - offset, draw);
     }
 }
 
