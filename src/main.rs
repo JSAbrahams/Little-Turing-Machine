@@ -5,7 +5,7 @@ use little_turing_machine::display::cli::print_machine;
 use little_turing_machine::presets::UniverseMetadata;
 
 #[derive(Debug, Parser)]
-#[command(about = "My Little Turing Machine")]
+#[command(about = "Little Turing Machine")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
