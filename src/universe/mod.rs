@@ -16,6 +16,7 @@ pub struct Universe {
     pub tape: Tape,
     pub pos: isize,
     pub machine: Machine,
+    pub ticks: usize,
 }
 
 impl Universe {
@@ -29,6 +30,7 @@ impl Universe {
             tape: Tape::from_iter(initial_tape),
             pos: initial_pos as isize,
             machine: Machine::new(initial_state, transition_function),
+            ticks: 0,
         }
     }
 
@@ -41,6 +43,10 @@ impl Universe {
     }
 
     pub fn tick(&mut self) -> Result<(Write, Action), String> {
+        if !self.machine.state.is_halted() {
+            self.ticks += 1;
+        }
+
         let scanned_symbol = self.tape.read(self.pos);
 
         let (print, action) = self.machine.tick(scanned_symbol)?;

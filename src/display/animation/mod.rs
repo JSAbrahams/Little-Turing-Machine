@@ -28,7 +28,7 @@ const CELL_STROKE_WIDTH: f32 = 1_f32;
 const TURING_MACHINE_HEIGHT: f32 = 40_f32;
 const TURING_MACHINE_WIDTH: f32 = 40_f32;
 
-const TURING_MACHINE_Y_OFFSET: f32 = -CELL_HEIGHT - CELL_HEIGHT;
+const TURING_MACHINE_Y_OFFSET: f32 = CELL_HEIGHT + CELL_HEIGHT;
 const CELL_Y_OFFSET: f32 = 0.0;
 const TRANSITION_FUNCTION_Y_OFFSET: f32 = 1.5 * TURING_MACHINE_HEIGHT + CELL_HEIGHT;
 
@@ -62,6 +62,7 @@ struct Model {
     universe: Universe,
     full_screen: bool,
     animate_moving: AnimateMoving,
+    show_tick_count: bool,
 }
 
 /// When animating, decide whether to move the machine or tape
@@ -99,8 +100,9 @@ pub fn animate(
     tick_speed: Option<Duration>,
     full_screen: bool,
     move_item: AnimateMoving,
+    show_tick_count: bool,
 ) {
-    set_model(metadata, full_screen, move_item);
+    set_model(metadata, full_screen, move_item, show_tick_count);
 
     nannou::app(model)
         .update(update)
@@ -110,11 +112,17 @@ pub fn animate(
         .run();
 }
 
-fn set_model(metadata: UniverseMetadata, full_screen: bool, move_item: AnimateMoving) {
+fn set_model(
+    metadata: UniverseMetadata,
+    full_screen: bool,
+    move_item: AnimateMoving,
+    show_tick_count: bool,
+) {
     let model_static = MODEL.get_or_init(|| Mutex::new(Model::default()));
     let mut model = Model::from(metadata);
     model.full_screen = full_screen;
     model.animate_moving = move_item;
+    model.show_tick_count = show_tick_count;
 
     *model_static.lock().unwrap() = model;
 }
@@ -179,7 +187,14 @@ fn view(app: &App, model: &Model, frame: Frame) {
     };
 
     draw_tape(&universe.tape, universe.pos, offset, &draw);
-    draw_machine(&universe.machine, pos, &model.state_as, &draw);
+    draw_machine(
+        &universe.machine,
+        pos,
+        &model.state_as,
+        universe.ticks,
+        model.show_tick_count,
+        &draw,
+    );
 
     draw.to_frame(app, &frame).unwrap();
 }
@@ -241,7 +256,14 @@ fn draw_symbol(content: &Symbol, pos: isize, draw: &Draw) {
         .center_justify();
 }
 
-fn draw_machine(machine: &Machine, pos: isize, state_as: &DisplayStateAs, draw: &Draw) {
+fn draw_machine(
+    machine: &Machine,
+    pos: isize,
+    state_as: &DisplayStateAs,
+    steps: usize,
+    draw_steps: bool,
+    draw: &Draw,
+) {
     let position = CELL_WIDTH * (pos - 1) as f32;
 
     // whole machine
@@ -251,7 +273,7 @@ fn draw_machine(machine: &Machine, pos: isize, state_as: &DisplayStateAs, draw: 
         .no_fill()
         .w(TURING_MACHINE_WIDTH)
         .h(TURING_MACHINE_HEIGHT)
-        .x_y(position, -TURING_MACHINE_Y_OFFSET);
+        .x_y(position, TURING_MACHINE_Y_OFFSET);
 
     // pointer
     draw.rect()
@@ -265,8 +287,17 @@ fn draw_machine(machine: &Machine, pos: isize, state_as: &DisplayStateAs, draw: 
     // state
     let state = display_state(machine.state, state_as);
     draw.text(state.as_str())
-        .x_y(position, -TURING_MACHINE_Y_OFFSET)
+        .x_y(position, TURING_MACHINE_Y_OFFSET)
         .center_justify();
+
+    if draw_steps {
+        draw.text(steps.to_string().as_str())
+            .center_justify()
+            .align_text_top()
+            .w(TURING_MACHINE_WIDTH)
+            .h(TURING_MACHINE_HEIGHT)
+            .x_y(position, TURING_MACHINE_Y_OFFSET);
+    }
 }
 
 fn draw_transition_function(

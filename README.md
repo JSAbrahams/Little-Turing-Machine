@@ -31,6 +31,7 @@ Options:
   -p, --preset <PRESET>
   -f, --full-screen
       --animate-moving <ANIMATE_MOVING>  [default: tape] [possible values: machine, tape]
+      --show-tick-count
   -h, --help                             Print help
   ```
 

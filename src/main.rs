@@ -24,6 +24,8 @@ enum Commands {
         full_screen: bool,
         #[arg(long, default_value_t=AnimateMoving::default(), value_enum)]
         animate_moving: AnimateMoving,
+        #[arg(long, default_value_t = false)]
+        show_tick_count: bool,
     },
 }
 
@@ -44,6 +46,7 @@ pub fn main() -> Result<(), String> {
             preset,
             full_screen,
             animate_moving: move_item,
+            show_tick_count,
         } => {
             let universe_meta = if let Some(preset) = preset {
                 UniverseMetadata::try_from(preset)?
@@ -51,7 +54,7 @@ pub fn main() -> Result<(), String> {
                 UniverseMetadata::default()
             };
 
-            animate(universe_meta, None, full_screen, move_item)
+            animate(universe_meta, None, full_screen, move_item, show_tick_count)
         }
     }
 
