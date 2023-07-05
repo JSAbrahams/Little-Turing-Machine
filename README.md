@@ -43,6 +43,7 @@ Preset | Description
 "beaver_3" | A 3-state 2-symbol busy beaver
 "beaver_4" | A 4-state 2-symbol busy beaver
 "beaver_5" | A 5-state 2-symbol busy beaver
+"counter_2" | A 2-symbol counter (also "binary counter")
 
 ## Example Output
 
