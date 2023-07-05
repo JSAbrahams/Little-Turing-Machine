@@ -4,7 +4,7 @@ Rediscovering my love of computer science.
 A fun little interactive (eventually) Turing machine (with finite tape, of course).
 
 For now, we only allow loading of presets.
-These presets consider of 3, 4, and 5-state 2-symbol busy beavers.
+These presets consider of a 2, 3, 4, and 5-state 2-symbol busy beavers.
 
 ## Requirements
 
@@ -39,10 +39,10 @@ The current preset are:
 
 Preset | Description
 ---|---
-"beaver_2" | A 2-state-2-symbol busy beaver
-"beaver_3" | A 3-state-2-symbol busy beaver
-"beaver_4" | A 4-state-2-symbol busy beaver
-"beaver_5" | A 5-state-2-symbol busy beaver
+"beaver_2" | A 2-state 2-symbol busy beaver
+"beaver_3" | A 3-state 2-symbol busy beaver
+"beaver_4" | A 4-state 2-symbol busy beaver
+"beaver_5" | A 5-state 2-symbol busy beaver
 
 ## Example Output
 
