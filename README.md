@@ -44,9 +44,9 @@ Preset | Description
 "beaver_4" | A 4-state-2-symbol busy beaver
 "beaver_5" | A 5-state-2-symbol busy beaver
 
-## Command Line Output
+## Example Output
 
-To the the following: `cargo run c 3`
+To the the following: `cargo run cli -p beaver_3`
 
 Example program of a 3-state, 2-symbol busy beaver.
 `!` means halt.
@@ -83,9 +83,3 @@ sequence :: instr :: HEAD :: tape
       13 ::   A   ::  2   :: 111111
       14 ::   !   ::  3   :: 111111
 ```
-
-## Animation Output
-
-To get the following: `cargo run a 3`
-
-- TODO: Animation output once done
