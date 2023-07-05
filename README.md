@@ -1,6 +1,5 @@
 # Little Turing Machine
 
-Rediscovering my love of computer science.
 A fun little interactive (eventually) Turing machine (with finite tape, of course).
 
 For now, we only allow loading of presets.
