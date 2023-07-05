@@ -8,7 +8,7 @@ These presets consider of a 2, 3, 4, and 5-state 2-symbol busy beavers.
 ## Requirements
 
 Rust, may be installed using [rustup](https://www.rust-lang.org/tools/install).
-The above is the reocmmended approach for installing Rust.
+The above is the recommended approach for installing Rust.
 
 ## Running Program
 
