@@ -22,7 +22,10 @@ pub fn print_machine(busy_beaver_packed: UniverseMetadata) {
 
     println!(
         "initial state: {}",
-        display_state_as[&universe.machine.state]
+        display_state_as
+            .get(&universe.machine.state)
+            .cloned()
+            .unwrap_or_default()
     );
 
     println!("transition function:");

@@ -8,6 +8,7 @@ use crate::universe::machine::{Action, Machine, Write};
 use crate::universe::tape::Tape;
 use crate::universe::{Symbol, Universe};
 
+use clap::ValueEnum;
 use nannou::prelude::*;
 use once_cell::sync::OnceCell;
 
@@ -59,6 +60,21 @@ struct Model {
     animation_queue: VecDeque<State>,
     state_as: DisplayStateAs,
     universe: Universe,
+    full_screen: bool,
+    animate_moving: AnimateMoving,
+}
+
+/// When animating, decide whether to move the machine or tape
+#[derive(ValueEnum, Copy, Clone, Debug, PartialEq, Eq)]
+pub enum AnimateMoving {
+    Machine,
+    Tape,
+}
+
+impl Default for AnimateMoving {
+    fn default() -> Self {
+        AnimateMoving::Tape
+    }
 }
 
 impl From<UniverseMetadata> for Model {
@@ -77,8 +93,14 @@ impl From<UniverseMetadata> for Model {
     }
 }
 
-pub fn animate(metadata: UniverseMetadata, tick_speed: Option<Duration>) {
-    set_model(metadata);
+// TODO have some `Options` struct
+pub fn animate(
+    metadata: UniverseMetadata,
+    tick_speed: Option<Duration>,
+    full_screen: bool,
+    move_item: AnimateMoving,
+) {
+    set_model(metadata, full_screen, move_item);
 
     nannou::app(model)
         .update(update)
@@ -88,24 +110,31 @@ pub fn animate(metadata: UniverseMetadata, tick_speed: Option<Duration>) {
         .run();
 }
 
-fn set_model(metadata: UniverseMetadata) {
-    let model = MODEL.get_or_init(|| Mutex::new(Model::default()));
-    *model.lock().unwrap() = Model::from(metadata);
+fn set_model(metadata: UniverseMetadata, full_screen: bool, move_item: AnimateMoving) {
+    let model_static = MODEL.get_or_init(|| Mutex::new(Model::default()));
+    let mut model = Model::from(metadata);
+    model.full_screen = full_screen;
+    model.animate_moving = move_item;
+
+    *model_static.lock().unwrap() = model;
 }
 
 /// Panics if model was never set.
 ///
 /// Workaround because we cannot pass to api as argument, and we cannot capture variables in closures.
 fn model(app: &App) -> Model {
-    app.new_window()
-        .title(WINDOW_TITLE)
-        .view(view)
-        .fullscreen()
-        .build()
-        .unwrap();
-
     let model = MODEL.get_or_init(|| Mutex::new(Model::default()));
-    model.lock().unwrap().clone()
+    let model = model.lock().unwrap().clone();
+
+    let view_builder = app.new_window().title(WINDOW_TITLE).view(view);
+    let view_builder = if model.full_screen {
+        view_builder.fullscreen()
+    } else {
+        view_builder
+    };
+    view_builder.build().unwrap();
+
+    model
 }
 
 fn update(_app: &App, model: &mut Model, _update: Update) {
@@ -143,8 +172,14 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(BLACK);
 
     draw_transition_function(&model.builder, &model.state_as, &draw);
-    draw_tape(&universe.tape, universe.pos, universe.pos, &draw);
-    draw_machine(&universe.machine, 0, &model.state_as, &draw);
+
+    let (offset, pos) = match model.animate_moving {
+        AnimateMoving::Tape => (universe.pos, 0),
+        AnimateMoving::Machine => (0, universe.pos),
+    };
+
+    draw_tape(&universe.tape, universe.pos, offset, &draw);
+    draw_machine(&universe.machine, pos, &model.state_as, &draw);
 
     draw.to_frame(app, &frame).unwrap();
 }
@@ -206,8 +241,8 @@ fn draw_symbol(content: &Symbol, pos: isize, draw: &Draw) {
         .center_justify();
 }
 
-fn draw_machine(machine: &Machine, position: isize, state_as: &DisplayStateAs, draw: &Draw) {
-    let position = CELL_WIDTH * (position - 1) as f32;
+fn draw_machine(machine: &Machine, pos: isize, state_as: &DisplayStateAs, draw: &Draw) {
+    let position = CELL_WIDTH * (pos - 1) as f32;
 
     // whole machine
     draw.rect()
