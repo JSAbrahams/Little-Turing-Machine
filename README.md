@@ -13,13 +13,36 @@ The above is the reocmmended approach for installing Rust.
 
 ## Running Program
 
-`cargo run`
+### Print to CLI
 
-- TODO: Add help message to program
-- TODO: Put help message output here
+```
+Usage: cargo run cli [OPTIONS]
 
-Must then type either 3, 4, or 5 to run either 3, 4, or 5-state 2-symbol busy beaver.
-Note that the 5-state busy beaver requires 47.176.870 steps to complete!
+Options:
+  -p, --preset <PRESET>
+  -h, --help             Print help
+```
+
+### Animate
+
+```
+Usage: cargo run animate [OPTIONS]
+
+Options:
+  -p, --preset <PRESET>
+  -f, --full-screen
+      --animate-moving <ANIMATE_MOVING>  [default: tape] [possible values: machine, tape]
+  -h, --help                             Print help
+  ```
+
+The current preset are:
+
+Preset | Description
+---|---
+"beaver_2" | A 2-state-2-symbol busy beaver
+"beaver_3" | A 3-state-2-symbol busy beaver
+"beaver_4" | A 4-state-2-symbol busy beaver
+"beaver_5" | A 5-state-2-symbol busy beaver
 
 ## Command Line Output
 
