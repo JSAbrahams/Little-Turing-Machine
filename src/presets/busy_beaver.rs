@@ -206,22 +206,6 @@ pub fn five_state_busy_beaver() -> UniverseMetadata {
     }
 }
 
-pub fn pick_beaver(input: &str) -> Option<UniverseMetadata> {
-    match input {
-        "1" => Some(one_state_busy_beaver()),
-        "2" => Some(two_state_busy_beaver()),
-        "3" => Some(three_state_busy_beaver()),
-        "4" => Some(four_state_busy_beaver()),
-        "5" => Some(five_state_busy_beaver()),
-        _ => {
-            println!(
-                "{input} is not a valid choice\nPick one of the following busy beavers {{1, 2, 3, 4, 5}}"
-            );
-            None
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::{one_state_busy_beaver, three_state_busy_beaver, two_state_busy_beaver};
