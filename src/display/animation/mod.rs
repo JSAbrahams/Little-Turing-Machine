@@ -192,7 +192,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw_machine(&universe.machine, pos, &model.state_as, &draw);
 
     if model.show_tick_count {
-        draw_steps(universe.ticks, pos, &draw);
+        draw_steps(universe.ticks, 0, &draw);
     }
 
     draw.to_frame(app, &frame).unwrap();
