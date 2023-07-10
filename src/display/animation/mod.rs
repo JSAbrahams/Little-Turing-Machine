@@ -34,6 +34,8 @@ const TRANSITION_FUNCTION_Y_OFFSET: f32 = 1.5 * TURING_MACHINE_HEIGHT + CELL_HEI
 
 const CELL_OUTLINE_COLOR: nannou::prelude::rgb::Srgb<u8> = STEELBLUE;
 
+const STEPS_Y_OFFSET: f32 = -1.5 * CELL_HEIGHT;
+
 // workaround for nannou API so we can pass model
 static MODEL: OnceCell<Mutex<Model>> = OnceCell::new();
 
@@ -187,14 +189,11 @@ fn view(app: &App, model: &Model, frame: Frame) {
     };
 
     draw_tape(&universe.tape, universe.pos, offset, &draw);
-    draw_machine(
-        &universe.machine,
-        pos,
-        &model.state_as,
-        universe.ticks,
-        model.show_tick_count,
-        &draw,
-    );
+    draw_machine(&universe.machine, pos, &model.state_as, &draw);
+
+    if model.show_tick_count {
+        draw_steps(universe.ticks, pos, &draw);
+    }
 
     draw.to_frame(app, &frame).unwrap();
 }
@@ -256,14 +255,7 @@ fn draw_symbol(content: &Symbol, pos: isize, draw: &Draw) {
         .center_justify();
 }
 
-fn draw_machine(
-    machine: &Machine,
-    pos: isize,
-    state_as: &DisplayStateAs,
-    steps: usize,
-    draw_steps: bool,
-    draw: &Draw,
-) {
+fn draw_machine(machine: &Machine, pos: isize, state_as: &DisplayStateAs, draw: &Draw) {
     let position = CELL_WIDTH * (pos - 1) as f32;
 
     // whole machine
@@ -289,15 +281,25 @@ fn draw_machine(
     draw.text(state.as_str())
         .x_y(position, TURING_MACHINE_Y_OFFSET)
         .center_justify();
+}
 
-    if draw_steps {
-        draw.text(steps.to_string().as_str())
-            .center_justify()
-            .align_text_top()
-            .w(TURING_MACHINE_WIDTH)
-            .h(TURING_MACHINE_HEIGHT)
-            .x_y(position, TURING_MACHINE_Y_OFFSET);
-    }
+fn draw_steps(steps: usize, pos: isize, draw: &Draw) {
+    let position = CELL_WIDTH * (pos - 1) as f32;
+
+    draw.rect()
+        .stroke_color(CELL_OUTLINE_COLOR)
+        .stroke_weight(CELL_STROKE_WIDTH)
+        .no_fill()
+        .w(TURING_MACHINE_WIDTH)
+        .h(TURING_MACHINE_HEIGHT / 2.0)
+        .x_y(position, STEPS_Y_OFFSET);
+
+    draw.text(steps.to_string().as_str())
+        .center_justify()
+        .align_text_middle_y()
+        .w(TURING_MACHINE_WIDTH)
+        .h(TURING_MACHINE_HEIGHT / 2.0)
+        .x_y(position, STEPS_Y_OFFSET);
 }
 
 fn draw_transition_function(
