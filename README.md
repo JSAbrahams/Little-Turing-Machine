@@ -12,10 +12,10 @@ The above is the recommended approach for installing Rust.
 
 ## Running Program
 
-### Print to CLI
+### Print to console
 
 ```
-Usage: cargo run cli [OPTIONS]
+Usage: cargo run console [OPTIONS]
 
 Options:
   -p, --preset <PRESET>

@@ -13,7 +13,7 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    Cli {
+    Console {
         #[arg(short, long)]
         preset: Option<String>,
     },
@@ -33,7 +33,7 @@ pub fn main() -> Result<(), String> {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Cli { preset } => {
+        Commands::Console { preset } => {
             let universe_meta = if let Some(preset) = preset {
                 UniverseMetadata::try_from(preset)?
             } else {
